@@ -10,7 +10,7 @@
 
 **Git 저장소:** https://github.com/YangSaekyul/lotto-cation
 
-**로컬 프로젝트:** `/Users/yang/CODE/lotto-map`
+**로컬 프로젝트:** `/Users/yang/CODE/lotto-cation`
 
 **기존 프로젝트 상태:** `YangSaekyul/lotto`는 코드 재사용 없이 폐기 대상으로 둔다. 원천·추출 데이터는 이 신규 저장소의 `data/`에 보존하며, 기존 저장소를 삭제/아카이브하기 전 보안 자격증명 노출 여부를 처리한다.
 
@@ -166,7 +166,7 @@
 
 ### 보유 원천
 
-현재 데이터 팩: `/Users/yang/CODE/lotto-map-data/`
+현재 데이터 팩: `/Users/yang/CODE/lotto-cation-data/`
 
 - `winning_store_history.csv`: 당첨 이력 51,456건
 - `winning_stores.json`: 상호·주소 합산 14,079건

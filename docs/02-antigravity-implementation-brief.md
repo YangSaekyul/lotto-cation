@@ -1,6 +1,6 @@
 # 2차 — Antigravity 기능 구현 브리프
 
-**작업 경로:** `/Users/yang/CODE/lotto-map`
+**작업 경로:** `/Users/yang/CODE/lotto-cation`
 
 ## 전제
 

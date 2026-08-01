@@ -1,6 +1,6 @@
 # 1차 — Codex 디자인 구현 브리프
 
-**작업 경로:** `/Users/yang/CODE/lotto-map`
+**작업 경로:** `/Users/yang/CODE/lotto-cation`
 
 ## 역할과 제한
 

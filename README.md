@@ -1,8 +1,10 @@
-# 로또 어디서 살까
+# 로또리 (Lottori)
+
+> 가까운 로또 판매점과 과거 당첨 이력을 쉽게 찾는 모바일 웹
 
 30대 이상 사용자를 위한 **모바일 우선 로또 판매점 탐색 서비스**의 신규 저장소다.
 
-- Git: https://github.com/YangSaekyul/lotto-map
+- Git: https://github.com/YangSaekyul/lottori
 - Project URL: 미배포 — 지도 MVP와 데이터 검증 후 확정
 - Product plan: [`PRODUCT_PLAN.md`](./PRODUCT_PLAN.md)
 

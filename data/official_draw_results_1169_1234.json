@@ -1,0 +1,1396 @@
+{
+  "source": "https://www.dhlottery.co.kr",
+  "refreshed_at": "2026-08-01T08:39:10.483451+00:00",
+  "draw_range": [
+    1169,
+    1234
+  ],
+  "draws": [
+    {
+      "draw_no": 1169,
+      "draw_date": "20250426",
+      "numbers": [
+        5,
+        12,
+        24,
+        26,
+        39,
+        42
+      ],
+      "bonus_number": 20,
+      "winner_counts": {
+        "1": 10,
+        "2": 112,
+        "3": 3244,
+        "4": 160483,
+        "5": 2668194
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1170,
+      "draw_date": "20250503",
+      "numbers": [
+        3,
+        13,
+        28,
+        34,
+        38,
+        42
+      ],
+      "bonus_number": 25,
+      "winner_counts": {
+        "1": 20,
+        "2": 103,
+        "3": 5668,
+        "4": 163866,
+        "5": 2637401
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1171,
+      "draw_date": "20250510",
+      "numbers": [
+        3,
+        6,
+        7,
+        11,
+        12,
+        17
+      ],
+      "bonus_number": 19,
+      "winner_counts": {
+        "1": 21,
+        "2": 148,
+        "3": 5317,
+        "4": 211503,
+        "5": 3094806
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1172,
+      "draw_date": "20250517",
+      "numbers": [
+        7,
+        9,
+        24,
+        40,
+        42,
+        44
+      ],
+      "bonus_number": 45,
+      "winner_counts": {
+        "1": 13,
+        "2": 98,
+        "3": 3059,
+        "4": 152897,
+        "5": 2590472
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1173,
+      "draw_date": "20250524",
+      "numbers": [
+        1,
+        5,
+        18,
+        20,
+        30,
+        35
+      ],
+      "bonus_number": 3,
+      "winner_counts": {
+        "1": 24,
+        "2": 94,
+        "3": 3139,
+        "4": 163678,
+        "5": 2689832
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1174,
+      "draw_date": "20250531",
+      "numbers": [
+        8,
+        11,
+        14,
+        17,
+        36,
+        39
+      ],
+      "bonus_number": 22,
+      "winner_counts": {
+        "1": 15,
+        "2": 85,
+        "3": 3196,
+        "4": 158944,
+        "5": 2670129
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1175,
+      "draw_date": "20250607",
+      "numbers": [
+        3,
+        4,
+        6,
+        8,
+        32,
+        42
+      ],
+      "bonus_number": 31,
+      "winner_counts": {
+        "1": 20,
+        "2": 92,
+        "3": 3178,
+        "4": 164364,
+        "5": 2723718
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1176,
+      "draw_date": "20250614",
+      "numbers": [
+        7,
+        9,
+        11,
+        21,
+        30,
+        35
+      ],
+      "bonus_number": 29,
+      "winner_counts": {
+        "1": 13,
+        "2": 89,
+        "3": 3533,
+        "4": 171545,
+        "5": 2746919
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1177,
+      "draw_date": "20250621",
+      "numbers": [
+        3,
+        7,
+        15,
+        16,
+        19,
+        43
+      ],
+      "bonus_number": 21,
+      "winner_counts": {
+        "1": 6,
+        "2": 75,
+        "3": 3111,
+        "4": 157438,
+        "5": 2644128
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1178,
+      "draw_date": "20250628",
+      "numbers": [
+        5,
+        6,
+        11,
+        27,
+        43,
+        44
+      ],
+      "bonus_number": 17,
+      "winner_counts": {
+        "1": 12,
+        "2": 89,
+        "3": 3061,
+        "4": 157044,
+        "5": 2653841
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1179,
+      "draw_date": "20250705",
+      "numbers": [
+        3,
+        16,
+        18,
+        24,
+        40,
+        44
+      ],
+      "bonus_number": 21,
+      "winner_counts": {
+        "1": 13,
+        "2": 63,
+        "3": 2989,
+        "4": 148832,
+        "5": 2516368
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1180,
+      "draw_date": "20250712",
+      "numbers": [
+        6,
+        12,
+        18,
+        37,
+        40,
+        41
+      ],
+      "bonus_number": 3,
+      "winner_counts": {
+        "1": 11,
+        "2": 72,
+        "3": 3010,
+        "4": 153274,
+        "5": 2567395
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1181,
+      "draw_date": "20250719",
+      "numbers": [
+        8,
+        10,
+        14,
+        20,
+        33,
+        41
+      ],
+      "bonus_number": 28,
+      "winner_counts": {
+        "1": 17,
+        "2": 86,
+        "3": 3109,
+        "4": 155938,
+        "5": 2596371
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1182,
+      "draw_date": "20250726",
+      "numbers": [
+        1,
+        13,
+        21,
+        25,
+        28,
+        31
+      ],
+      "bonus_number": 22,
+      "winner_counts": {
+        "1": 13,
+        "2": 79,
+        "3": 3015,
+        "4": 156025,
+        "5": 2616958
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1183,
+      "draw_date": "20250802",
+      "numbers": [
+        4,
+        15,
+        17,
+        23,
+        27,
+        36
+      ],
+      "bonus_number": 31,
+      "winner_counts": {
+        "1": 13,
+        "2": 92,
+        "3": 3623,
+        "4": 169030,
+        "5": 2680548
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1184,
+      "draw_date": "20250809",
+      "numbers": [
+        14,
+        16,
+        23,
+        25,
+        31,
+        37
+      ],
+      "bonus_number": 42,
+      "winner_counts": {
+        "1": 15,
+        "2": 95,
+        "3": 3115,
+        "4": 155556,
+        "5": 2576710
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1185,
+      "draw_date": "20250816",
+      "numbers": [
+        6,
+        17,
+        22,
+        28,
+        29,
+        32
+      ],
+      "bonus_number": 38,
+      "winner_counts": {
+        "1": 12,
+        "2": 79,
+        "3": 2903,
+        "4": 153798,
+        "5": 2566276
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1186,
+      "draw_date": "20250823",
+      "numbers": [
+        2,
+        8,
+        13,
+        16,
+        23,
+        28
+      ],
+      "bonus_number": 35,
+      "winner_counts": {
+        "1": 14,
+        "2": 89,
+        "3": 3226,
+        "4": 162707,
+        "5": 2628810
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1187,
+      "draw_date": "20250830",
+      "numbers": [
+        5,
+        13,
+        26,
+        29,
+        37,
+        40
+      ],
+      "bonus_number": 42,
+      "winner_counts": {
+        "1": 11,
+        "2": 79,
+        "3": 3147,
+        "4": 152448,
+        "5": 2557090
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1188,
+      "draw_date": "20250906",
+      "numbers": [
+        3,
+        4,
+        12,
+        19,
+        22,
+        27
+      ],
+      "bonus_number": 9,
+      "winner_counts": {
+        "1": 24,
+        "2": 111,
+        "3": 3713,
+        "4": 188314,
+        "5": 2901056
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1189,
+      "draw_date": "20250913",
+      "numbers": [
+        9,
+        19,
+        29,
+        35,
+        37,
+        38
+      ],
+      "bonus_number": 31,
+      "winner_counts": {
+        "1": 13,
+        "2": 167,
+        "3": 3121,
+        "4": 152345,
+        "5": 2577694
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1190,
+      "draw_date": "20250920",
+      "numbers": [
+        7,
+        9,
+        19,
+        23,
+        26,
+        45
+      ],
+      "bonus_number": 33,
+      "winner_counts": {
+        "1": 6,
+        "2": 113,
+        "3": 3293,
+        "4": 168764,
+        "5": 2752776
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1191,
+      "draw_date": "20250927",
+      "numbers": [
+        1,
+        4,
+        11,
+        12,
+        20,
+        41
+      ],
+      "bonus_number": 2,
+      "winner_counts": {
+        "1": 18,
+        "2": 132,
+        "3": 3649,
+        "4": 184758,
+        "5": 2905296
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1192,
+      "draw_date": "20251004",
+      "numbers": [
+        10,
+        16,
+        23,
+        36,
+        39,
+        40
+      ],
+      "bonus_number": 11,
+      "winner_counts": {
+        "1": 29,
+        "2": 95,
+        "3": 3476,
+        "4": 171551,
+        "5": 2841016
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1193,
+      "draw_date": "20251011",
+      "numbers": [
+        6,
+        9,
+        16,
+        19,
+        24,
+        28
+      ],
+      "bonus_number": 17,
+      "winner_counts": {
+        "1": 16,
+        "2": 84,
+        "3": 3635,
+        "4": 175936,
+        "5": 2782376
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1194,
+      "draw_date": "20251018",
+      "numbers": [
+        3,
+        13,
+        15,
+        24,
+        33,
+        37
+      ],
+      "bonus_number": 2,
+      "winner_counts": {
+        "1": 28,
+        "2": 99,
+        "3": 5442,
+        "4": 186820,
+        "5": 2884544
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1195,
+      "draw_date": "20251025",
+      "numbers": [
+        3,
+        15,
+        27,
+        33,
+        34,
+        36
+      ],
+      "bonus_number": 37,
+      "winner_counts": {
+        "1": 10,
+        "2": 86,
+        "3": 3337,
+        "4": 165621,
+        "5": 2797760
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1196,
+      "draw_date": "20251101",
+      "numbers": [
+        8,
+        12,
+        15,
+        29,
+        40,
+        45
+      ],
+      "bonus_number": 14,
+      "winner_counts": {
+        "1": 15,
+        "2": 94,
+        "3": 2837,
+        "4": 153894,
+        "5": 2619093
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1197,
+      "draw_date": "20251108",
+      "numbers": [
+        1,
+        5,
+        7,
+        26,
+        28,
+        43
+      ],
+      "bonus_number": 30,
+      "winner_counts": {
+        "1": 13,
+        "2": 74,
+        "3": 3087,
+        "4": 162871,
+        "5": 2751422
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1198,
+      "draw_date": "20251115",
+      "numbers": [
+        26,
+        30,
+        33,
+        38,
+        39,
+        41
+      ],
+      "bonus_number": 21,
+      "winner_counts": {
+        "1": 10,
+        "2": 78,
+        "3": 3110,
+        "4": 155228,
+        "5": 2591974
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1199,
+      "draw_date": "20251122",
+      "numbers": [
+        16,
+        24,
+        25,
+        30,
+        31,
+        32
+      ],
+      "bonus_number": 7,
+      "winner_counts": {
+        "1": 17,
+        "2": 75,
+        "3": 3504,
+        "4": 157073,
+        "5": 2604985
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1200,
+      "draw_date": "20251129",
+      "numbers": [
+        1,
+        2,
+        4,
+        16,
+        20,
+        32
+      ],
+      "bonus_number": 45,
+      "winner_counts": {
+        "1": 12,
+        "2": 80,
+        "3": 3584,
+        "4": 161754,
+        "5": 2673060
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1201,
+      "draw_date": "20251206",
+      "numbers": [
+        7,
+        9,
+        24,
+        27,
+        35,
+        36
+      ],
+      "bonus_number": 37,
+      "winner_counts": {
+        "1": 19,
+        "2": 84,
+        "3": 3321,
+        "4": 166050,
+        "5": 2711377
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1202,
+      "draw_date": "20251213",
+      "numbers": [
+        5,
+        12,
+        21,
+        33,
+        37,
+        40
+      ],
+      "bonus_number": 7,
+      "winner_counts": {
+        "1": 14,
+        "2": 109,
+        "3": 3764,
+        "4": 180212,
+        "5": 2723770
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1203,
+      "draw_date": "20251220",
+      "numbers": [
+        3,
+        6,
+        18,
+        29,
+        35,
+        39
+      ],
+      "bonus_number": 24,
+      "winner_counts": {
+        "1": 21,
+        "2": 118,
+        "3": 3588,
+        "4": 171960,
+        "5": 2784823
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1204,
+      "draw_date": "20251227",
+      "numbers": [
+        8,
+        16,
+        28,
+        30,
+        31,
+        44
+      ],
+      "bonus_number": 27,
+      "winner_counts": {
+        "1": 18,
+        "2": 95,
+        "3": 3361,
+        "4": 164919,
+        "5": 2753835
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1205,
+      "draw_date": "20260103",
+      "numbers": [
+        1,
+        4,
+        16,
+        23,
+        31,
+        41
+      ],
+      "bonus_number": 2,
+      "winner_counts": {
+        "1": 10,
+        "2": 97,
+        "3": 3486,
+        "4": 174740,
+        "5": 2915978
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1206,
+      "draw_date": "20260110",
+      "numbers": [
+        1,
+        3,
+        17,
+        26,
+        27,
+        42
+      ],
+      "bonus_number": 23,
+      "winner_counts": {
+        "1": 15,
+        "2": 74,
+        "3": 3329,
+        "4": 172867,
+        "5": 2897371
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1207,
+      "draw_date": "20260117",
+      "numbers": [
+        10,
+        22,
+        24,
+        27,
+        38,
+        45
+      ],
+      "bonus_number": 11,
+      "winner_counts": {
+        "1": 17,
+        "2": 86,
+        "3": 3365,
+        "4": 168020,
+        "5": 2756042
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1208,
+      "draw_date": "20260124",
+      "numbers": [
+        6,
+        27,
+        30,
+        36,
+        38,
+        42
+      ],
+      "bonus_number": 25,
+      "winner_counts": {
+        "1": 6,
+        "2": 68,
+        "3": 2932,
+        "4": 149359,
+        "5": 2544535
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1209,
+      "draw_date": "20260131",
+      "numbers": [
+        2,
+        17,
+        20,
+        35,
+        37,
+        39
+      ],
+      "bonus_number": 24,
+      "winner_counts": {
+        "1": 22,
+        "2": 73,
+        "3": 3141,
+        "4": 163147,
+        "5": 2724028
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1210,
+      "draw_date": "20260207",
+      "numbers": [
+        1,
+        7,
+        9,
+        17,
+        27,
+        38
+      ],
+      "bonus_number": 31,
+      "winner_counts": {
+        "1": 24,
+        "2": 153,
+        "3": 4649,
+        "4": 211663,
+        "5": 3139766
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1211,
+      "draw_date": "20260214",
+      "numbers": [
+        23,
+        26,
+        27,
+        35,
+        38,
+        40
+      ],
+      "bonus_number": 10,
+      "winner_counts": {
+        "1": 14,
+        "2": 86,
+        "3": 3332,
+        "4": 174056,
+        "5": 2902451
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1212,
+      "draw_date": "20260221",
+      "numbers": [
+        5,
+        8,
+        25,
+        31,
+        41,
+        44
+      ],
+      "bonus_number": 45,
+      "winner_counts": {
+        "1": 12,
+        "2": 79,
+        "3": 3482,
+        "4": 175609,
+        "5": 2923618
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1213,
+      "draw_date": "20260228",
+      "numbers": [
+        5,
+        11,
+        25,
+        27,
+        36,
+        38
+      ],
+      "bonus_number": 2,
+      "winner_counts": {
+        "1": 18,
+        "2": 110,
+        "3": 3724,
+        "4": 180063,
+        "5": 2958422
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1214,
+      "draw_date": "20260307",
+      "numbers": [
+        10,
+        15,
+        19,
+        27,
+        30,
+        33
+      ],
+      "bonus_number": 14,
+      "winner_counts": {
+        "1": 12,
+        "2": 99,
+        "3": 3618,
+        "4": 177889,
+        "5": 2921649
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1215,
+      "draw_date": "20260314",
+      "numbers": [
+        13,
+        15,
+        19,
+        21,
+        44,
+        45
+      ],
+      "bonus_number": 39,
+      "winner_counts": {
+        "1": 16,
+        "2": 76,
+        "3": 3120,
+        "4": 153024,
+        "5": 2640357
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1216,
+      "draw_date": "20260321",
+      "numbers": [
+        3,
+        10,
+        14,
+        15,
+        23,
+        24
+      ],
+      "bonus_number": 25,
+      "winner_counts": {
+        "1": 14,
+        "2": 87,
+        "3": 3181,
+        "4": 168089,
+        "5": 2853121
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1217,
+      "draw_date": "20260328",
+      "numbers": [
+        8,
+        10,
+        15,
+        20,
+        29,
+        31
+      ],
+      "bonus_number": 41,
+      "winner_counts": {
+        "1": 14,
+        "2": 85,
+        "3": 3344,
+        "4": 163563,
+        "5": 2742207
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1218,
+      "draw_date": "20260404",
+      "numbers": [
+        3,
+        28,
+        31,
+        32,
+        42,
+        45
+      ],
+      "bonus_number": 25,
+      "winner_counts": {
+        "1": 18,
+        "2": 80,
+        "3": 2889,
+        "4": 150326,
+        "5": 2600819
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1219,
+      "draw_date": "20260411",
+      "numbers": [
+        1,
+        2,
+        15,
+        28,
+        39,
+        45
+      ],
+      "bonus_number": 31,
+      "winner_counts": {
+        "1": 12,
+        "2": 77,
+        "3": 3079,
+        "4": 150733,
+        "5": 2560905
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1220,
+      "draw_date": "20260418",
+      "numbers": [
+        2,
+        22,
+        25,
+        28,
+        34,
+        43
+      ],
+      "bonus_number": 16,
+      "winner_counts": {
+        "1": 14,
+        "2": 85,
+        "3": 3192,
+        "4": 161279,
+        "5": 2688906
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1221,
+      "draw_date": "20260425",
+      "numbers": [
+        6,
+        13,
+        18,
+        28,
+        30,
+        36
+      ],
+      "bonus_number": 9,
+      "winner_counts": {
+        "1": 16,
+        "2": 96,
+        "3": 3465,
+        "4": 174082,
+        "5": 2745724
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1222,
+      "draw_date": "20260502",
+      "numbers": [
+        4,
+        11,
+        17,
+        22,
+        32,
+        41
+      ],
+      "bonus_number": 34,
+      "winner_counts": {
+        "1": 24,
+        "2": 115,
+        "3": 4081,
+        "4": 182844,
+        "5": 2896800
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1223,
+      "draw_date": "20260509",
+      "numbers": [
+        16,
+        18,
+        20,
+        32,
+        33,
+        39
+      ],
+      "bonus_number": 26,
+      "winner_counts": {
+        "1": 16,
+        "2": 103,
+        "3": 3481,
+        "4": 161967,
+        "5": 2716882
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1224,
+      "draw_date": "20260516",
+      "numbers": [
+        9,
+        18,
+        21,
+        27,
+        44,
+        45
+      ],
+      "bonus_number": 28,
+      "winner_counts": {
+        "1": 12,
+        "2": 70,
+        "3": 3373,
+        "4": 166726,
+        "5": 2716244
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1225,
+      "draw_date": "20260523",
+      "numbers": [
+        8,
+        9,
+        19,
+        25,
+        41,
+        42
+      ],
+      "bonus_number": 33,
+      "winner_counts": {
+        "1": 13,
+        "2": 76,
+        "3": 3333,
+        "4": 161090,
+        "5": 2705194
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1226,
+      "draw_date": "20260530",
+      "numbers": [
+        4,
+        6,
+        13,
+        17,
+        26,
+        28
+      ],
+      "bonus_number": 41,
+      "winner_counts": {
+        "1": 10,
+        "2": 75,
+        "3": 3557,
+        "4": 171525,
+        "5": 2803464
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1227,
+      "draw_date": "20260606",
+      "numbers": [
+        1,
+        14,
+        16,
+        34,
+        41,
+        44
+      ],
+      "bonus_number": 13,
+      "winner_counts": {
+        "1": 11,
+        "2": 70,
+        "3": 3042,
+        "4": 151881,
+        "5": 2523341
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1228,
+      "draw_date": "20260613",
+      "numbers": [
+        24,
+        29,
+        30,
+        31,
+        35,
+        44
+      ],
+      "bonus_number": 1,
+      "winner_counts": {
+        "1": 11,
+        "2": 83,
+        "3": 2836,
+        "4": 147604,
+        "5": 2514073
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1229,
+      "draw_date": "20260620",
+      "numbers": [
+        12,
+        13,
+        29,
+        34,
+        37,
+        42
+      ],
+      "bonus_number": 16,
+      "winner_counts": {
+        "1": 8,
+        "2": 89,
+        "3": 2925,
+        "4": 152290,
+        "5": 2583834
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1230,
+      "draw_date": "20260627",
+      "numbers": [
+        3,
+        8,
+        9,
+        22,
+        28,
+        42
+      ],
+      "bonus_number": 45,
+      "winner_counts": {
+        "1": 16,
+        "2": 90,
+        "3": 3336,
+        "4": 168902,
+        "5": 2770957
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1231,
+      "draw_date": "20260704",
+      "numbers": [
+        4,
+        13,
+        14,
+        18,
+        31,
+        38
+      ],
+      "bonus_number": 15,
+      "winner_counts": {
+        "1": 17,
+        "2": 92,
+        "3": 3329,
+        "4": 162821,
+        "5": 2686693
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1232,
+      "draw_date": "20260711",
+      "numbers": [
+        12,
+        15,
+        19,
+        22,
+        24,
+        36
+      ],
+      "bonus_number": 3,
+      "winner_counts": {
+        "1": 11,
+        "2": 92,
+        "3": 2984,
+        "4": 149349,
+        "5": 2539242
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1233,
+      "draw_date": "20260718",
+      "numbers": [
+        2,
+        7,
+        20,
+        25,
+        37,
+        40
+      ],
+      "bonus_number": 29,
+      "winner_counts": {
+        "1": 31,
+        "2": 76,
+        "3": 4438,
+        "4": 185487,
+        "5": 2833927
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    },
+    {
+      "draw_no": 1234,
+      "draw_date": "20260725",
+      "numbers": [
+        1,
+        15,
+        19,
+        31,
+        35,
+        43
+      ],
+      "bonus_number": 27,
+      "winner_counts": {
+        "1": 18,
+        "2": 71,
+        "3": 2985,
+        "4": 146684,
+        "5": 2475581
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result"
+    }
+  ]
+}

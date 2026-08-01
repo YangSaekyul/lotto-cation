@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f8f5;
+  --surface: #ffffff;
+  --foreground: #17211c;
+  --muted: #68736d;
+  --line: #dfe4df;
+  --action: #0f8a5f;
+  --action-soft: #e8f4ef;
+  --rank-one: #c83b3b;
+  --rank-two: #d97120;
+  --rank-three: #3174b8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: #eef1ed;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a,
+select,
+label {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgb(15 138 95 / 30%);
+  outline-offset: 2px;
+}
+
+.map-grid {
+  background-color: #e8ede7;
+  background-image:
+    linear-gradient(28deg, transparent 44%, rgb(255 255 255 / 78%) 45%, rgb(255 255 255 / 78%) 50%, transparent 51%),
+    linear-gradient(118deg, transparent 39%, rgb(255 255 255 / 66%) 40%, rgb(255 255 255 / 66%) 45%, transparent 46%),
+    linear-gradient(90deg, rgb(204 217 205 / 45%) 1px, transparent 1px),
+    linear-gradient(rgb(204 217 205 / 45%) 1px, transparent 1px);
+  background-size: 180px 180px, 230px 230px, 38px 38px, 38px 38px;
+}
+
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pressable {
+    transition: transform 150ms ease, background-color 150ms ease, border-color 150ms ease;
+  }
+
+  .pressable:active {
+    transform: scale(0.98);
+  }
+}

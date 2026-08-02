@@ -1,0 +1,69 @@
+name: 공식 로또 데이터 갱신
+
+on:
+  schedule:
+    - cron: "0 12 * * 6" # 매주 토요일 21:00 KST
+  workflow_dispatch:
+  repository_dispatch:
+    types: [refresh-lotto-data]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lotto-data-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+      - run: npm ci
+      - name: 새 회차 게시 확인
+        if: github.event_name == 'schedule'
+        run: |
+          previous_draw=$(node -e "const d=require('./data/official_draw_results_all.json'); console.log(d.draw_range[1])")
+          found_new_draw=false
+          for attempt in $(seq 1 12); do
+            latest_draw=$(python3 -c "from scripts.refresh_official_lotto_data import discover_latest_draw; print(discover_latest_draw())")
+            echo "확인 ${attempt}/12: 저장소 ${previous_draw}회, 공식 ${latest_draw}회"
+            if [ "$latest_draw" -gt "$previous_draw" ]; then
+              found_new_draw=true
+              break
+            fi
+            if [ "$attempt" -lt 12 ]; then sleep 300; fi
+          done
+          if [ "$found_new_draw" != "true" ]; then
+            echo "새 회차가 확인되지 않았습니다. 기존 데이터는 변경하지 않습니다."
+            exit 1
+          fi
+      - name: 공식 데이터 수집 및 정규화
+        run: |
+          python3 scripts/refresh_official_lotto_data.py
+          python3 scripts/build_unified_store_records.py
+          npm run import-data
+      - name: 검증
+        run: |
+          npm run lint
+          npm test
+          npm run build
+      - name: 변경 반영
+        run: |
+          if git diff --quiet -- data; then
+            echo "변경된 데이터 없음"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          git commit -m "공식 로또 데이터 자동 갱신"
+          git push

@@ -1,15 +1,28 @@
 import { ChevronRight, MapPin } from "lucide-react";
 import Link from "next/link";
-import type { StoreRecord, WinRank } from "@/lib/mock-data";
 import { RankBadge } from "@/components/rank-badge";
+import type { WinRank } from "@/lib/db";
 
 type StoreCardProps = {
-  store: StoreRecord;
+  store: {
+    id: string;
+    name: string;
+    address: string;
+    distance?: string;
+    distanceFormatted?: string;
+    totalWins: number;
+    rankCounts: Partial<Record<WinRank, number>>;
+    status?: string;
+  };
   rank?: number;
 };
 
 export function StoreCard({ store, rank }: StoreCardProps) {
-  const visibleRanks = ([1, 2, 3, 4, 5] as WinRank[]).filter((item) => store.rankCounts[item]);
+  const visibleRanks = ([1, 2, 3, 4, 5] as WinRank[]).filter(
+    (item) => store.rankCounts && (store.rankCounts[item] ?? 0) > 0
+  );
+
+  const displayDistance = store.distanceFormatted || store.distance || "";
 
   return (
     <Link
@@ -32,12 +45,14 @@ export function StoreCard({ store, rank }: StoreCardProps) {
             <ChevronRight aria-hidden="true" className="shrink-0 text-[#8B958F]" size={22} />
           </div>
           <p className="mt-1 truncate text-[15px] text-[#68736D]">{store.address}</p>
-          <p className="mt-1 text-[14px] font-bold text-[#0F8A5F]">{store.distance}</p>
+          {displayDistance && (
+            <p className="mt-1 text-[14px] font-bold text-[#0F8A5F]">{displayDistance}</p>
+          )}
         </div>
       </div>
       <div className="mt-3 flex flex-wrap gap-1.5 border-t border-[#EDF0ED] pt-3">
         {visibleRanks.map((item) => (
-          <RankBadge key={item} rank={item} count={store.rankCounts[item]} />
+          <RankBadge key={item} rank={item} count={store.rankCounts[item]!} />
         ))}
         <span className="ml-auto self-center text-[14px] font-bold text-[#4F5B54]">총 {store.totalWins}회</span>
       </div>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Info } from "lucide-react";
 
 export function ProbabilityNotice() {
@@ -14,7 +15,10 @@ export function ProbabilityNotice() {
 export function PageFooter() {
   return (
     <footer className="px-4 pb-24 pt-5 text-center text-[13px] font-medium text-[#7A847E] sm:px-6">
-      동행복권과 무관한 정보 서비스
+      <p>동행복권과 무관한 정보 서비스</p>
+      <Link href="/privacy" className="mt-2 inline-flex min-h-10 items-center font-bold underline">
+        개인정보 처리 안내
+      </Link>
     </footer>
   );
 }

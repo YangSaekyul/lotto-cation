@@ -21,7 +21,7 @@ def geocode(address: str, client_id: str, client_secret: str) -> dict:
     request = Request(url, headers={
         "X-NCP-APIGW-API-KEY-ID": client_id,
         "X-NCP-APIGW-API-KEY": client_secret,
-        "User-Agent": "LottoCationGeocoder/1.0",
+        "User-Agent": "LottoRiGeocoder/1.0",
     })
     with urlopen(request, timeout=20) as response:
         payload = json.load(response)

@@ -1,4 +1,4 @@
--- PostgreSQL / Supabase Database Schema for LottoCation
+-- PostgreSQL / Supabase Database Schema for LottoRi
 
 
 -- 1. Stores Table

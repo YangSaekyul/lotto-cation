@@ -2,7 +2,7 @@
 
 > **For Hermes:** Build only after the data-location pipeline is proven; the existing legacy lotto repository is data-only input and must not be reused as application code.
 
-**서비스명:** 로또케이션 (LottoCation)
+**서비스명:** 로또리 (LottoRi)
 
 **한 줄 설명:** 가까운 로또 판매점과 과거 당첨 이력을 쉽게 찾는 모바일 웹
 

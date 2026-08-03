@@ -8,7 +8,7 @@ export default function PrivacyPage() {
       <AppHeader title="개인정보 처리 안내" backHref="/" />
       <main className="px-4 pb-4 pt-5 text-[15px] leading-7 text-[#43534A] sm:px-6">
         <h1 className="text-[24px] font-black text-[#17211C]">개인정보 처리 안내</h1>
-        <p className="mt-3">로또케이션은 판매점 정보 제보 처리에 필요한 최소 정보만 사용합니다.</p>
+        <p className="mt-3">로또리는 판매점 정보 제보 처리에 필요한 최소 정보만 사용합니다.</p>
         <section className="mt-5 space-y-2 rounded-2xl border border-[#DFE4DF] bg-white p-4">
           <h2 className="font-extrabold text-[#17211C]">처리 항목과 목적</h2>
           <p>선택 입력한 이메일은 제보 확인 연락에만 사용합니다. 스팸 방지를 위해 IP 주소를 복원할 수 없는 해시로 변환하여 처리합니다.</p>

@@ -7,7 +7,7 @@ type AppHeaderProps = {
   eyebrow?: string;
 };
 
-export function AppHeader({ title = "로또케이션", backHref, eyebrow }: AppHeaderProps) {
+export function AppHeader({ title = "로또리", backHref, eyebrow }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-40 flex min-h-16 items-center gap-3 border-b border-[#DFE4DF] bg-[#F7F8F5]/95 px-4 backdrop-blur-sm sm:px-6">
       {backHref ? (

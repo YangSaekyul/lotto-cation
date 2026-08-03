@@ -427,7 +427,7 @@ export function MapHome() {
         <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between p-4 sm:p-6">
           <div className="flex min-h-12 items-center gap-2 rounded-2xl border border-[#DDE4DE] bg-white px-3.5 shadow-sm">
             <span className="flex size-8 items-center justify-center rounded-lg bg-[#0F8A5F] text-white"><Ticket aria-hidden="true" size={18} /></span>
-            <div><p className="text-[18px] font-black leading-5 tracking-[-0.03em]">로또케이션</p><p className="text-[11px] font-bold text-[#68736D]">LOTTO + LOCATION</p></div>
+            <div><p className="text-[18px] font-black leading-5 tracking-[-0.03em]">로또리</p><p className="text-[11px] font-bold text-[#68736D]">LOTTO + RI</p></div>
           </div>
           <button type="button" onClick={requestLocation} className="pressable flex size-12 items-center justify-center rounded-full border border-[#DDE4DE] bg-white text-[#0F8A5F] shadow-sm" aria-label="현재 위치로 이동"><LocateFixed aria-hidden="true" size={24} /></button>
         </div>

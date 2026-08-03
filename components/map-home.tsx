@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle, LocateFixed, Search, Ticket } from "lucide-react";
 import { PageFooter } from "@/components/page-footer";
 import { StoreCard } from "@/components/store-card";
-import type { MapStoreRecord, StoreRecord } from "@/lib/db";
+import type { StoreRecord } from "@/lib/db";
 import { buildNaverDirectionsUrl, getPodiumRanks, sortNearbyStores, type NearbySort, type PodiumRank } from "@/lib/map-features";
 
 declare global {
@@ -53,10 +53,9 @@ export function MapHome() {
   const [centerLocation, setCenterLocation] = useState(DEFAULT_CENTER);
   const [radius, setRadius] = useState(1);
   const [nearbyStores, setNearbyStores] = useState<NearbyStoreRecord[]>([]);
-  const [mapStores, setMapStores] = useState<MapStoreRecord[]>([]);
   const [sortMode, setSortMode] = useState<NearbySort>("wins");
   const [loading, setLoading] = useState(true);
-  const [locationStatus, setLocationStatus] = useState<"map" | "granted" | "denied">("map");
+  const [locationStatus, setLocationStatus] = useState<"locating" | "granted" | "denied" | "map">("locating");
   const [locationMessage, setLocationMessage] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [mapError, setMapError] = useState<string | null>(null);
@@ -65,12 +64,12 @@ export function MapHome() {
   const mapElementRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const centerLocationRef = useRef(DEFAULT_CENTER);
+  const locationStatusRef = useRef<"locating" | "granted" | "denied" | "map">("locating");
   const markersRef = useRef<any[]>([]);
   const mapIdleListenerRef = useRef<any>(null);
   const mapDragListenerRef = useRef<any>(null);
   const mapClickListenerRef = useRef<any>(null);
   const viewportTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const viewportAbortRef = useRef<AbortController | null>(null);
   const nearbyAbortRef = useRef<AbortController | null>(null);
   const infoWindowRef = useRef<any>(null);
   const activeStoreIdRef = useRef<string | null>(null);
@@ -81,6 +80,10 @@ export function MapHome() {
   useEffect(() => {
     radiusRef.current = radius;
   }, [radius]);
+
+  useEffect(() => {
+    locationStatusRef.current = locationStatus;
+  }, [locationStatus]);
 
   const markProgrammaticMove = useCallback(() => {
     programmaticMoveRef.current = true;
@@ -110,33 +113,6 @@ export function MapHome() {
     }
   }, []);
 
-  const fetchVisibleMapStores = useCallback(async (map: any) => {
-    const bounds = map.getBounds?.();
-    if (!bounds) return;
-    const southWest = bounds.getSW();
-    const northEast = bounds.getNE();
-    const query = new URLSearchParams({
-      south: String(southWest.lat()),
-      west: String(southWest.lng()),
-      north: String(northEast.lat()),
-      east: String(northEast.lng()),
-    });
-
-    viewportAbortRef.current?.abort();
-    const controller = new AbortController();
-    viewportAbortRef.current = controller;
-    try {
-      const response = await fetch(`/api/stores/bounds?${query}`, { signal: controller.signal });
-      if (!response.ok) throw new Error(`Bounds API ${response.status}`);
-      const data = await response.json();
-      setMapStores(data.stores || []);
-    } catch (error) {
-      if ((error as Error).name !== "AbortError") {
-        console.error("Failed to fetch visible map stores:", error);
-      }
-    }
-  }, []);
-
   const scheduleViewportRefresh = useCallback(
     (map: any) => {
       if (viewportTimerRef.current) clearTimeout(viewportTimerRef.current);
@@ -145,11 +121,12 @@ export function MapHome() {
         const nextCenter = { lat: center.lat(), lng: center.lng() };
         centerLocationRef.current = nextCenter;
         setCenterLocation(nextCenter);
-        fetchVisibleMapStores(map);
+        if (locationStatusRef.current === "locating") return;
+        // 마커와 반경 목록 모두 같은 반경 데이터(radius)로 채운다 → 두 카운터가 항상 일치.
         fetchNearbyStores(center.lat(), center.lng(), radiusRef.current);
       }, 240);
     },
-    [fetchNearbyStores, fetchVisibleMapStores],
+    [fetchNearbyStores],
   );
 
   useEffect(() => {
@@ -187,6 +164,23 @@ export function MapHome() {
     };
   }, []);
 
+  const applyUserLocation = useCallback(
+    (coords: { lat: number; lng: number }) => {
+      centerLocationRef.current = coords;
+      setCenterLocation(coords);
+      setLocationStatus("granted");
+      setLocationMessage(null);
+      fetchNearbyStores(coords.lat, coords.lng, radiusRef.current);
+      const map = mapInstanceRef.current;
+      if (map && window.naver?.maps) {
+        markProgrammaticMove();
+        map.setCenter(new window.naver.maps.LatLng(coords.lat, coords.lng));
+        map.setZoom(RADIUS_OPTIONS.find((option) => option.value === radiusRef.current)?.zoom ?? 14);
+      }
+    },
+    [fetchNearbyStores, markProgrammaticMove],
+  );
+
   const requestLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setLocationStatus("denied");
@@ -196,18 +190,7 @@ export function MapHome() {
     setLocationMessage("현재 위치를 확인하는 중입니다...");
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const coords = { lat: position.coords.latitude, lng: position.coords.longitude };
-        centerLocationRef.current = coords;
-        setCenterLocation(coords);
-        setLocationStatus("granted");
-        setLocationMessage(null);
-        fetchNearbyStores(coords.lat, coords.lng, radiusRef.current);
-        const map = mapInstanceRef.current;
-        if (map && window.naver?.maps) {
-          markProgrammaticMove();
-          map.setCenter(new window.naver.maps.LatLng(coords.lat, coords.lng));
-          map.setZoom(RADIUS_OPTIONS.find((option) => option.value === radiusRef.current)?.zoom ?? 14);
-        }
+        applyUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
       },
       (error) => {
         console.warn("Geolocation denied or error:", error);
@@ -220,7 +203,38 @@ export function MapHome() {
       },
       { timeout: 8000, enableHighAccuracy: true, maximumAge: 60_000 },
     );
-  }, [fetchNearbyStores, markProgrammaticMove]);
+  }, [applyUserLocation]);
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      const timer = setTimeout(() => {
+        setLocationStatus("denied");
+        setLocationMessage("이 브라우저에서는 현재 위치를 사용할 수 없습니다. 기본 위치(서울) 기준으로 보여드립니다.");
+        const fallback = DEFAULT_CENTER;
+        fetchNearbyStores(fallback.lat, fallback.lng, radiusRef.current);
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        if (locationStatusRef.current !== "locating") return;
+        applyUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+      },
+      (error) => {
+        if (locationStatusRef.current !== "locating") return;
+        console.warn("Auto geolocation denied or error:", error);
+        setLocationStatus("denied");
+        setLocationMessage(
+          error.code === error.PERMISSION_DENIED
+            ? "현재 위치 권한이 차단됐습니다. 브라우저 주소창의 위치 권한과 macOS 위치 서비스를 허용해 주세요. 지금은 기본 위치(서울) 기준으로 보여드립니다."
+            : "현재 위치를 가져오지 못했습니다. 지금은 기본 위치(서울) 기준으로 보여드립니다. 잠시 후 다시 누르거나 지역을 검색해 주세요.",
+        );
+        const fallback = DEFAULT_CENTER;
+        fetchNearbyStores(fallback.lat, fallback.lng, radiusRef.current);
+      },
+      { timeout: 8000, enableHighAccuracy: true, maximumAge: 60_000 },
+    );
+  }, [applyUserLocation, fetchNearbyStores]);
 
   useEffect(() => {
     if (!isMapLoaded || !mapElementRef.current || !window.naver?.maps || mapInstanceRef.current) return;
@@ -252,7 +266,6 @@ export function MapHome() {
       if (mapClickListenerRef.current) window.naver.maps.Event.removeListener(mapClickListenerRef.current);
       if (viewportTimerRef.current) clearTimeout(viewportTimerRef.current);
       if (programmaticMoveTimerRef.current) clearTimeout(programmaticMoveTimerRef.current);
-      viewportAbortRef.current?.abort();
       nearbyAbortRef.current?.abort();
       infoWindowRef.current?.close();
       mapInstanceRef.current = null;
@@ -267,13 +280,14 @@ export function MapHome() {
     markersRef.current = [];
 
     const map = mapInstanceRef.current;
-    const podiumRanks = getPodiumRanks(mapStores);
+    // 지도 마커는 반경 목록과 동일한 nearbyStores 데이터로 렌더링 → 마커 수 == "반경 내 판매점" 수.
+    const podiumRanks = getPodiumRanks(nearbyStores);
     const podiumIds = new Set(Object.keys(podiumRanks));
     const zoom = map.getZoom();
     const cellSize = clusterCellSize(zoom);
-    const groups = new Map<string, MapStoreRecord[]>();
+    const groups = new Map<string, NearbyStoreRecord[]>();
 
-    for (const store of mapStores) {
+    for (const store of nearbyStores) {
       if (podiumIds.has(store.id) || cellSize === 0) {
         groups.set(`store:${store.id}`, [store]);
         continue;
@@ -374,7 +388,7 @@ export function MapHome() {
       });
       markersRef.current.push(marker);
     }
-  }, [isMapLoaded, mapStores]);
+  }, [isMapLoaded, nearbyStores]);
 
   const sortedStores = useMemo(() => sortNearbyStores(nearbyStores, sortMode), [nearbyStores, sortMode]);
 
@@ -461,8 +475,14 @@ export function MapHome() {
           )}
         </div>
 
+        {locationStatus === "locating" && isMapLoaded && !mapError && (
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#F2F5F3]/70">
+            <div className="rounded-full border border-[#C9D4CC] bg-white px-4 py-2 text-[13px] font-extrabold text-[#0F8A5F] shadow-sm">현재 위치를 확인하는 중입니다...</div>
+          </div>
+        )}
+
         <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-[#C9D4CC] bg-white/95 px-3 py-2 text-[11px] font-extrabold text-[#4F5B54] shadow-sm">
-          <span>현재 화면 {mapStores.length}곳</span><span aria-hidden="true">·</span>
+          <span>반경 내 {nearbyStores.length}곳</span><span aria-hidden="true">·</span>
           <span className="text-[#967814]">● 1위</span><span className="text-[#7A8087]">● 2위</span><span className="text-[#9A5427]">● 3위</span>
         </div>
       </section>
@@ -471,7 +491,7 @@ export function MapHome() {
         <div aria-hidden="true" className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-[#C2CAC4]" />
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-[14px] font-extrabold text-[#0F8A5F]">{locationStatus === "granted" ? "현재 위치 기준" : "선택한 중심 위치 기준"} ({radiusLabel(radius)} 반경)</p>
+            <p className="text-[14px] font-extrabold text-[#0F8A5F]">{locationStatus === "granted" ? "현재 위치 기준" : locationStatus === "locating" ? "현재 위치 확인 중" : "선택한 중심 위치 기준"} ({radiusLabel(radius)} 반경)</p>
             <h1 id="nearby-title" className="mt-0.5 text-[24px] font-black tracking-[-0.04em]">반경 내 판매점 {nearbyStores.length}곳</h1>
           </div>
           <div className="flex w-fit rounded-xl border border-[#D8DED9] bg-white p-1" aria-label="판매점 정렬 방식">
@@ -480,7 +500,9 @@ export function MapHome() {
           </div>
         </div>
 
-        {loading ? (
+        {locationStatus === "locating" ? (
+          <div className="py-12 text-center font-bold text-[#94A199]">현재 위치를 확인하는 중입니다. 잠시만 기다려 주세요...</div>
+        ) : loading ? (
           <div className="py-12 text-center font-bold text-[#68736D]">판매점 데이터를 불러오는 중...</div>
         ) : sortedStores.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-[#D8DED9] bg-white p-6 py-12 text-center font-bold text-[#68736D]">선택한 반경 내 판매점이 없습니다. 반경을 넓히거나 다른 위치를 선택해 주세요.</div>

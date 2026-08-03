@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { BottomNav } from "@/components/bottom-nav";
 
-const SITE_URL = "https://lotto-cation.vercel.app";
+const SITE_URL = "https://lotto-ri.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

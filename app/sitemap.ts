@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getDbMeta, getSitemapStores } from "@/lib/db";
 
-const SITE_URL = "https://lotto-cation.vercel.app";
+const SITE_URL = "https://lotto-ri.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const meta = getDbMeta();

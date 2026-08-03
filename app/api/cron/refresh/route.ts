@@ -9,7 +9,7 @@ async function triggerRefresh(request: Request) {
   const token = process.env.GITHUB_DATA_REFRESH_TOKEN;
   if (!token) return NextResponse.json({ error: "Refresh integration is not configured." }, { status: 503 });
 
-  const response = await fetch("https://api.github.com/repos/YangSaekyul/lotto-cation/dispatches", {
+  const response = await fetch("https://api.github.com/repos/YangSaekyul/lotto-ri/dispatches", {
     method: "POST",
     headers: {
       Accept: "application/vnd.github+json",

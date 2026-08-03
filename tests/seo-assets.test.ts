@@ -11,6 +11,6 @@ test('browser icon and Google crawl endpoints are present', () => {
   }
   const layout = fs.readFileSync(path.join(root, 'app/layout.tsx'), 'utf8');
   assert.match(layout, /metadataBase/);
-  assert.match(layout, /lotto-cation\.vercel\.app/);
+  assert.match(layout, /lotto-ri\.vercel\.app/);
   assert.match(layout, /application\/ld\+json/);
 });

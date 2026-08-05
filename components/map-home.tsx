@@ -6,7 +6,7 @@ import { AlertCircle, LocateFixed, Search, Ticket } from "lucide-react";
 import { PageFooter } from "@/components/page-footer";
 import { StoreCard } from "@/components/store-card";
 import type { StoreRecord } from "@/lib/db";
-import { buildNaverDirectionsUrl, getPodiumRanks, sortNearbyStores, type NearbySort, type PodiumRank } from "@/lib/map-features";
+import { buildNaverDirectionsUrl, getPodiumRanks, sortNearbyStores, haversineDistance, formatDistance, getBoundsFromCenterAndRadius, type NearbySort, type PodiumRank } from "@/lib/map-features";
 
 declare global {
   interface Window {
@@ -99,13 +99,34 @@ export function MapHome() {
     nearbyAbortRef.current = controller;
     setLoading(true);
     try {
-      const response = await fetch(`/api/stores/nearby?lat=${lat}&lng=${lng}&radius=${selectedRadius}`, { signal: controller.signal });
-      if (!response.ok) throw new Error(`Nearby API ${response.status}`);
+      const map = mapInstanceRef.current;
+      let url = "";
+      if (map && window.naver?.maps) {
+        const bounds = map.getBounds();
+        const sw = bounds.getSW();
+        const ne = bounds.getNE();
+        url = `/api/stores/bounds?south=${sw.lat()}&west=${sw.lng()}&north=${ne.lat()}&east=${ne.lng()}`;
+      } else {
+        const bounds = getBoundsFromCenterAndRadius(lat, lng, selectedRadius);
+        url = `/api/stores/bounds?south=${bounds.south}&west=${bounds.west}&north=${bounds.north}&east=${bounds.east}`;
+      }
+
+      const response = await fetch(url, { signal: controller.signal });
+      if (!response.ok) throw new Error(`Bounds API ${response.status}`);
       const data = await response.json();
-      setNearbyStores(data.stores || []);
+      const stores = (data.stores || []).map((store: any) => {
+        const dist = haversineDistance(lat, lng, store.latitude, store.longitude);
+        return {
+          ...store,
+          distanceKm: dist,
+          distanceFormatted: formatDistance(dist),
+          status: store.status || "좌표 확인",
+        };
+      });
+      setNearbyStores(stores);
     } catch (error) {
       if ((error as Error).name !== "AbortError") {
-        console.error("Failed to fetch nearby stores:", error);
+        console.error("Failed to fetch stores in bounds:", error);
         setNearbyStores([]);
       }
     } finally {

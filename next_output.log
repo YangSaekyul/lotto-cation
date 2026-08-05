@@ -1,0 +1,9 @@
+▲ Next.js 16.2.12 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 506ms
+
+○ Compiling / ...
+ GET / 200 in 7.2s (next.js: 6.4s, application-code: 790ms)
+[browser] Auto geolocation denied or error: [object GeolocationPositionError] (components/map-home.tsx:246:17)
+ GET /api/stores/bounds?south=37.55749099099099&west=126.96666693466267&north=37.575509009009004&east=126.98933306533732 200 in 1264ms (next.js: 711ms, application-code: 552ms)

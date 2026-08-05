@@ -19,8 +19,8 @@ test('map markers render from the same radius data as the nearby list, so the tw
   assert.match(source, /getPodiumRanks\(nearbyStores\)/);
   assert.match(source, /for \(const store of nearbyStores\)/);
   assert.match(source, /\[isMapLoaded, nearbyStores\]/);
-  // The markers must no longer come from the viewport bounds API.
-  assert.doesNotMatch(source, /\/api\/stores\/bounds/);
+  // Both markers and lists must use the bounds API to display all stores in the viewport.
+  assert.match(source, /\/api\/stores\/bounds/);
   assert.doesNotMatch(source, /fetchVisibleMapStores/);
   assert.doesNotMatch(source, /mapStores/);
 });

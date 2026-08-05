@@ -1,6 +1,39 @@
 export type PodiumRank = 1 | 2 | 3;
 export type NearbySort = 'distance' | 'wins';
 
+export function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371; // Radius of the Earth in km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+export function formatDistance(distanceKm: number): string {
+  if (distanceKm < 1) {
+    const meters = Math.round(distanceKm * 1000);
+    return `${meters}m`;
+  }
+  return `${distanceKm.toFixed(1)}km`;
+}
+
+export function getBoundsFromCenterAndRadius(lat: number, lng: number, radiusKm: number) {
+  const latDelta = radiusKm / 111;
+  const lngDelta = radiusKm / (111.32 * Math.cos((lat * Math.PI) / 180));
+  return {
+    south: lat - latDelta,
+    west: lng - lngDelta,
+    north: lat + latDelta,
+    east: lng + lngDelta,
+  };
+}
+
 export function buildNaverDirectionsUrl(store: {
   name: string;
   address: string;

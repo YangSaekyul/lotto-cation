@@ -26,10 +26,16 @@ export function StoreMiniMap({ store }: StoreMiniMapProps) {
     : "/";
 
   useEffect(() => {
-    let timer: ReturnType<typeof setInterval> | null = null;
+    let isCancelled = false;
 
-    const initMiniMap = () => {
-      if (!mapContainerRef.current || !window.naver?.maps || !store.latitude || !store.longitude) return false;
+    const tryInit = () => {
+      if (isCancelled) return;
+      if (!mapContainerRef.current || !store.latitude || !store.longitude) return;
+
+      if (!window.naver?.maps) {
+        setTimeout(tryInit, 200);
+        return;
+      }
 
       try {
         mapContainerRef.current.innerHTML = "";
@@ -58,24 +64,24 @@ export function StoreMiniMap({ store }: StoreMiniMapProps) {
           },
         });
 
+        setTimeout(() => {
+          if (map && window.naver?.maps) {
+            window.naver.maps.Event.trigger(map, "resize");
+            map.setCenter(center);
+          }
+        }, 100);
+
         setMapLoaded(true);
-        return true;
       } catch (err) {
         console.error("Mini map initialization error:", err);
-        return false;
+        setTimeout(tryInit, 500);
       }
     };
 
-    if (!initMiniMap()) {
-      timer = setInterval(() => {
-        if (initMiniMap() && timer) {
-          clearInterval(timer);
-        }
-      }, 200);
-    }
+    tryInit();
 
     return () => {
-      if (timer) clearInterval(timer);
+      isCancelled = true;
     };
   }, [store]);
 

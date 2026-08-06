@@ -45,9 +45,9 @@ function clusterCellSize(zoom: number): number {
   if (zoom >= 14) return 0;
   if (zoom === 13) return 0.006;
   if (zoom === 12) return 0.014;
-  if (zoom === 11) return 0.03;
-  if (zoom === 10) return 0.07;
-  return 0.15;
+  if (zoom === 11) return 0.04;
+  if (zoom === 10) return 0.1;
+  return 0.25;
 }
 
 export function MapHome() {
@@ -342,6 +342,8 @@ function getRadiusFromZoom(zoom: number): number {
     const map = new window.naver.maps.Map(mapElementRef.current, {
       center: new window.naver.maps.LatLng(centerLocationRef.current.lat, centerLocationRef.current.lng),
       zoom: RADIUS_OPTIONS.find((option) => option.value === radiusRef.current)?.zoom ?? 14,
+      minZoom: 9,
+      maxZoom: 19,
       scaleControl: false,
       logoControl: true,
       mapDataControl: false,
@@ -856,7 +858,7 @@ function getRadiusFromZoom(zoom: number): number {
           </div>
         ) : (
           <div className="space-y-3">
-            {sortedStores.map((store) => (
+            {sortedStores.slice(0, 50).map((store) => (
               <div key={store.id} className="[content-visibility:auto] [contain-intrinsic-size:150px]">
                 <StoreCard
                   store={store}
@@ -865,6 +867,11 @@ function getRadiusFromZoom(zoom: number): number {
                 />
               </div>
             ))}
+            {sortedStores.length > 50 && (
+              <p className="mt-2 text-center text-[12px] font-bold text-[#68736D]">
+                반경 내 상위 50개 판매점을 먼저 표시합니다. 지도를 확대하면 세부 판매점이 표시됩니다.
+              </p>
+            )}
           </div>
         )}
         <PageFooter />

@@ -17,7 +17,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="주요 메뉴"
-      className="safe-bottom fixed inset-x-0 bottom-0 z-50 mx-auto grid w-full max-w-3xl grid-cols-4 border-t border-[#DCE2DD] bg-white/96 px-1 pt-1 backdrop-blur-sm"
+      className="fixed inset-x-0 bottom-0 z-50 mx-auto grid w-full max-w-3xl grid-cols-4 border-t border-[#DCE2DD] bg-white/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-4px_16px_rgba(0,0,0,0.04)] backdrop-blur-md"
     >
       {items.map((item) => {
         const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -28,12 +28,14 @@ export function BottomNav() {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`pressable flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-xl text-[12px] font-bold ${
-              active ? "bg-[#E8F4EF] text-[#0F8A5F]" : "text-[#68736D]"
+            className={`pressable flex min-h-[52px] flex-col items-center justify-center gap-1 rounded-2xl px-1 text-[12px] font-extrabold transition-all ${
+              active
+                ? "bg-[#E8F4EF] text-[#0F8A5F]"
+                : "text-[#68736D] hover:bg-[#F4F6F4] hover:text-[#17211C]"
             }`}
           >
-            <Icon aria-hidden="true" size={22} strokeWidth={active ? 2.4 : 2} />
-            <span>{item.label}</span>
+            <Icon aria-hidden="true" size={21} strokeWidth={active ? 2.5 : 2} />
+            <span className="leading-none">{item.label}</span>
           </Link>
         );
       })}

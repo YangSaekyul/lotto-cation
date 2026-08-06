@@ -473,7 +473,7 @@ export function MapHome() {
         const preview = document.createElement("div");
         preview.setAttribute("role", "button");
         preview.tabIndex = 0;
-        preview.style.cssText = "width:260px;padding:14px;border-radius:16px;background:#fff;color:#17211c;box-shadow:0 8px 24px rgba(0,0,0,.2);cursor:pointer;font-family:inherit";
+        preview.style.cssText = "width:min(260px,calc(100vw - 48px));padding:14px;border-radius:16px;background:#fff;color:#17211c;box-shadow:0 8px 24px rgba(0,0,0,.2);cursor:pointer;font-family:inherit";
 
         const title = document.createElement("strong");
         title.textContent = store.name;
@@ -565,35 +565,59 @@ export function MapHome() {
   };
 
   return (
-    <main className="relative min-h-dvh overflow-x-hidden pb-20">
-      <section aria-label="판매점 지도" className="map-grid relative h-[65dvh] min-h-[500px] overflow-hidden border-b border-[#D6DED7]">
-        <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between p-4 sm:p-6">
-          <div className="flex min-h-12 items-center gap-2 rounded-2xl border border-[#DDE4DE] bg-white px-3.5 shadow-sm">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-[#0F8A5F] text-white"><Ticket aria-hidden="true" size={18} /></span>
-            <div><p className="text-[18px] font-black leading-5 tracking-[-0.03em]">로또리</p><p className="text-[11px] font-bold text-[#68736D]">LOTTO + RI</p></div>
+    <main className="relative min-h-dvh overflow-x-hidden pb-24">
+      <section aria-label="판매점 지도" className="map-grid relative h-[58dvh] min-h-[min(460px,55dvh)] overflow-hidden border-b border-[#D6DED7]">
+        {/* Top Floating Bar */}
+        <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between p-3.5 pt-[max(0.75rem,env(safe-area-inset-top))] sm:p-6">
+          <div className="flex min-h-11 items-center gap-2 rounded-2xl border border-[#DDE4DE] bg-white/95 px-3 py-1 shadow-sm backdrop-blur-md">
+            <span className="flex size-7.5 items-center justify-center rounded-lg bg-[#0F8A5F] text-white shadow-xs">
+              <Ticket aria-hidden="true" size={17} />
+            </span>
+            <div>
+              <p className="text-[17px] font-black leading-tight tracking-[-0.03em] text-[#17211C]">로또리</p>
+              <p className="text-[10px] font-extrabold text-[#0F8A5F] tracking-wide">LOTTO + RI</p>
+            </div>
           </div>
-          <button type="button" onClick={requestLocation} className="pressable flex size-12 items-center justify-center rounded-full border border-[#DDE4DE] bg-white text-[#0F8A5F] shadow-sm" aria-label="현재 위치로 이동"><LocateFixed aria-hidden="true" size={24} /></button>
+          <button
+            type="button"
+            onClick={requestLocation}
+            className="pressable flex size-11 items-center justify-center rounded-2xl border border-[#DDE4DE] bg-white/95 text-[#0F8A5F] shadow-sm backdrop-blur-md active:bg-[#E8F4EF]"
+            aria-label="현재 위치로 이동"
+          >
+            <LocateFixed aria-hidden="true" size={22} />
+          </button>
         </div>
 
         {/* Row 1: Radius Selector */}
-        <div className="absolute left-4 right-4 top-[70px] z-20 flex items-center gap-2 overflow-x-auto pb-1 sm:left-6 sm:right-6">
-          <div className="flex shrink-0 items-center rounded-full border border-[#D7DED8] bg-white/95 p-1 shadow-sm backdrop-blur-sm">
+        <div className="no-scrollbar absolute left-3.5 right-3.5 top-[60px] z-20 flex items-center gap-2 overflow-x-auto pb-1 pt-[max(0.25rem,env(safe-area-inset-top))] sm:left-6 sm:right-6">
+          <div className="flex shrink-0 items-center rounded-full border border-[#D7DED8] bg-white/95 p-1 shadow-sm backdrop-blur-md">
             {RADIUS_OPTIONS.map((option) => (
-              <button key={option.value} type="button" onClick={() => handleRadiusChange(option)} className={`min-h-10 shrink-0 rounded-full px-3 text-[13px] font-extrabold transition-colors ${radius === option.value ? "bg-[#0F8A5F] text-white shadow-sm" : "text-[#556159] hover:text-[#17211C]"}`}>{option.label}</button>
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => handleRadiusChange(option)}
+                className={`min-h-9 shrink-0 rounded-full px-3 text-[13px] font-extrabold transition-all ${
+                  radius === option.value
+                    ? "bg-[#0F8A5F] text-white shadow-xs"
+                    : "text-[#556159] hover:text-[#17211C] active:bg-[#F2F5F3]"
+                }`}
+              >
+                {option.label}
+              </button>
             ))}
           </div>
         </div>
 
         {/* Row 2: Win Rank Multi-Select Filter */}
-        <div className="absolute left-4 right-4 top-[124px] z-20 flex items-center gap-1.5 overflow-x-auto pb-1 sm:left-6 sm:right-6">
-          <div className="flex shrink-0 items-center gap-1 rounded-full border border-[#D7DED8] bg-white/95 p-1 shadow-sm backdrop-blur-sm">
+        <div className="no-scrollbar absolute left-3.5 right-3.5 top-[108px] z-20 flex items-center gap-1.5 overflow-x-auto pb-1 pt-[max(0.25rem,env(safe-area-inset-top))] sm:left-6 sm:right-6">
+          <div className="flex shrink-0 items-center gap-1 rounded-full border border-[#D7DED8] bg-white/95 p-1 shadow-sm backdrop-blur-md">
             <button
               type="button"
               onClick={() => setSelectedWinRanks([])}
-              className={`min-h-8 shrink-0 rounded-full px-3 text-[12px] font-extrabold transition-colors ${
+              className={`min-h-9 shrink-0 rounded-full px-3 text-[12px] font-extrabold transition-all ${
                 selectedWinRanks.length === 0
-                  ? "bg-[#17211C] text-white shadow-sm"
-                  : "text-[#68736D] hover:text-[#17211C]"
+                  ? "bg-[#17211C] text-white shadow-xs"
+                  : "text-[#68736D] hover:text-[#17211C] active:bg-[#F2F5F3]"
               }`}
             >
               전체
@@ -601,9 +625,9 @@ export function MapHome() {
             <button
               type="button"
               onClick={() => toggleWinRank(1)}
-              className={`flex min-h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[12px] font-extrabold transition-all ${
+              className={`flex min-h-9 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[12px] font-extrabold transition-all ${
                 selectedWinRanks.includes(1)
-                  ? "border border-[#F59E0B] bg-[#FEF3C7] font-black text-[#92400E] shadow-sm"
+                  ? "border border-[#F59E0B] bg-[#FEF3C7] font-black text-[#92400E] shadow-xs"
                   : "text-[#556159] hover:text-[#17211C]"
               }`}
             >
@@ -613,9 +637,9 @@ export function MapHome() {
             <button
               type="button"
               onClick={() => toggleWinRank(2)}
-              className={`flex min-h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[12px] font-extrabold transition-all ${
+              className={`flex min-h-9 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[12px] font-extrabold transition-all ${
                 selectedWinRanks.includes(2)
-                  ? "border border-[#94A3B8] bg-[#F1F5F9] font-black text-[#1E293B] shadow-sm"
+                  ? "border border-[#94A3B8] bg-[#F1F5F9] font-black text-[#1E293B] shadow-xs"
                   : "text-[#556159] hover:text-[#17211C]"
               }`}
             >
@@ -625,9 +649,9 @@ export function MapHome() {
             <button
               type="button"
               onClick={() => toggleWinRank(3)}
-              className={`flex min-h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[12px] font-extrabold transition-all ${
+              className={`flex min-h-9 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[12px] font-extrabold transition-all ${
                 selectedWinRanks.includes(3)
-                  ? "border border-[#F97316] bg-[#FFEDD5] font-black text-[#9A3412] shadow-sm"
+                  ? "border border-[#F97316] bg-[#FFEDD5] font-black text-[#9A3412] shadow-xs"
                   : "text-[#556159] hover:text-[#17211C]"
               }`}
             >
@@ -637,23 +661,54 @@ export function MapHome() {
           </div>
         </div>
 
+        {/* Location Denied Search Form */}
         {locationStatus === "denied" && (
-          <div className="absolute left-4 right-4 top-[176px] z-20 sm:left-6 sm:right-6">
-            {locationMessage && <p className="mb-2 rounded-xl bg-white/95 px-3 py-2 text-[13px] font-bold leading-5 text-[#B23B3B] shadow-sm">{locationMessage}</p>}
-            <form onSubmit={handleAddressSearch} className="flex min-h-12 items-center rounded-xl border border-[#DDE4DE] bg-white px-3 shadow-md">
+          <div className="absolute left-3.5 right-3.5 top-[152px] z-20 sm:left-6 sm:right-6">
+            {locationMessage && (
+              <p className="mb-2 rounded-xl bg-white/95 px-3 py-2 text-[12px] font-bold leading-5 text-[#B23B3B] shadow-sm backdrop-blur-md">
+                {locationMessage}
+              </p>
+            )}
+            <form
+              onSubmit={handleAddressSearch}
+              className="flex min-h-12 items-center rounded-2xl border border-[#DDE4DE] bg-white px-3 shadow-md"
+            >
               <Search size={18} className="mr-2 shrink-0 text-[#68736D]" />
-              <input type="text" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="지역명 입력 (예: 강남역, 서면)" className="w-full bg-transparent text-[16px] font-bold outline-none" />
-              <button type="submit" className="ml-2 min-h-12 shrink-0 rounded-lg bg-[#0F8A5F] px-3 text-[14px] font-bold text-white">검색</button>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="지역명 입력 (예: 강남역, 서면)"
+                className="w-full bg-transparent text-[16px] font-bold outline-none"
+              />
+              <button
+                type="submit"
+                className="pressable ml-2 min-h-9 shrink-0 rounded-xl bg-[#0F8A5F] px-3.5 text-[13px] font-black text-white shadow-xs"
+              >
+                검색
+              </button>
             </form>
           </div>
         )}
 
+        {/* Floating Thumb GPS Button on Bottom-Right of Map */}
+        <div className="absolute bottom-10 right-4 z-20">
+          <button
+            type="button"
+            onClick={requestLocation}
+            className="pressable flex size-12 items-center justify-center rounded-2xl border border-[#DDE4DE] bg-white text-[#0F8A5F] shadow-lg active:scale-95"
+            aria-label="현재 위치로 이동"
+          >
+            <LocateFixed aria-hidden="true" size={22} />
+          </button>
+        </div>
+
         {/* Map Container */}
-        <div className="relative h-full min-h-[500px] w-full bg-[#E5E9E6]">
+        <div className="relative h-full min-h-[min(460px,55dvh)] w-full bg-[#E5E9E6]">
           <div
             ref={mapElementRef}
-            className="h-full min-h-[500px] w-full"
-            style={{ width: "100%", height: "100%", minHeight: "500px" }}
+            className="h-full min-h-[min(460px,55dvh)] w-full"
+            style={{ width: "100%", height: "100%", minHeight: "min(460px, 55dvh)" }}
           />
           {(!isMapLoaded || mapError) && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#F2F5F3] p-6 text-center">
@@ -665,34 +720,53 @@ export function MapHome() {
         </div>
 
         {locationStatus === "locating" && isMapLoaded && !mapError && (
-          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#F2F5F3]/40">
-            <div className="rounded-full border border-[#C9D4CC] bg-white px-4 py-2 text-[13px] font-extrabold text-[#0F8A5F] shadow-sm">현재 위치를 확인하는 중입니다...</div>
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#F2F5F3]/40 backdrop-blur-xs">
+            <div className="rounded-full border border-[#C9D4CC] bg-white px-4 py-2 text-[13px] font-extrabold text-[#0F8A5F] shadow-md animate-pulse">
+              현재 위치를 확인하는 중입니다...
+            </div>
           </div>
         )}
       </section>
 
-      <section aria-labelledby="nearby-title" className="relative z-30 -mt-7 rounded-t-[28px] border-t border-[#D8DFD9] bg-[#F7F8F5] px-4 pt-3 sm:px-6">
-        <div aria-hidden="true" className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-[#C2CAC4]" />
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      {/* Bottom Store List Drawer */}
+      <section aria-labelledby="nearby-title" className="relative z-30 -mt-7 rounded-t-[32px] border-t border-[#D8DFD9] bg-[#F7F8F5] px-4 pt-3.5 shadow-[0_-6px_24px_rgba(0,0,0,0.04)] sm:px-6">
+        <div aria-hidden="true" className="mx-auto mb-3.5 h-1.5 w-12 rounded-full bg-[#C2CAC4]" />
+        <div className="mb-4 flex flex-col gap-2.5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-[14px] font-extrabold text-[#0F8A5F]">
+            <p className="text-[13px] font-extrabold text-[#0F8A5F]">
               {locationStatus === "granted" ? "현재 위치 기준" : locationStatus === "locating" ? "현재 위치 확인 중" : "선택한 중심 위치 기준"} ({radiusLabel(radius)} 반경)
               {selectedWinRanks.length > 0 && ` · ${selectedWinRanks.sort().map((r) => `${r}등`).join("·")} 배출 필터`}
             </p>
-            <h1 id="nearby-title" className="mt-0.5 text-[24px] font-black tracking-[-0.04em]">
+            <h1 id="nearby-title" className="mt-0.5 text-[22px] font-black tracking-[-0.04em] text-[#17211C] sm:text-[24px]">
               반경 내 판매점 {filteredStores.length}곳
             </h1>
           </div>
-          <div className="flex w-fit rounded-xl border border-[#D8DED9] bg-white p-1" aria-label="판매점 정렬 방식">
-            <button type="button" onClick={() => setSortMode("distance")} className={`min-h-12 rounded-lg px-3 text-[13px] font-extrabold ${sortMode === "distance" ? "bg-[#17211C] text-white" : "text-[#556159]"}`}>거리순</button>
-            <button type="button" onClick={() => setSortMode("wins")} className={`min-h-12 rounded-lg px-3 text-[13px] font-extrabold ${sortMode === "wins" ? "bg-[#17211C] text-white" : "text-[#556159]"}`}>당첨순</button>
+          <div className="flex w-fit self-end sm:self-auto rounded-2xl border border-[#D8DED9] bg-white p-1 shadow-xs" aria-label="판매점 정렬 방식">
+            <button
+              type="button"
+              onClick={() => setSortMode("distance")}
+              className={`min-h-9 rounded-xl px-3.5 text-[13px] font-extrabold transition-all ${
+                sortMode === "distance" ? "bg-[#17211C] text-white shadow-xs" : "text-[#556159] hover:text-[#17211C]"
+              }`}
+            >
+              거리순
+            </button>
+            <button
+              type="button"
+              onClick={() => setSortMode("wins")}
+              className={`min-h-9 rounded-xl px-3.5 text-[13px] font-extrabold transition-all ${
+                sortMode === "wins" ? "bg-[#17211C] text-white shadow-xs" : "text-[#556159] hover:text-[#17211C]"
+              }`}
+            >
+              당첨순
+            </button>
           </div>
         </div>
 
         {locationStatus === "locating" ? (
-          <div className="py-12 text-center font-bold text-[#94A199]">현재 위치를 확인하는 중입니다. 잠시만 기다려 주세요...</div>
+          <div className="py-14 text-center font-bold text-[#94A199]">현재 위치를 확인하는 중입니다. 잠시만 기다려 주세요...</div>
         ) : loading ? (
-          <div className="py-12 text-center font-bold text-[#68736D]">판매점 데이터를 불러오는 중...</div>
+          <div className="py-14 text-center font-bold text-[#68736D]">판매점 데이터를 불러오는 중...</div>
         ) : sortedStores.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-[#D8DED9] bg-white p-6 py-12 text-center font-bold text-[#68736D]">
             {selectedWinRanks.length > 0
@@ -701,7 +775,11 @@ export function MapHome() {
           </div>
         ) : (
           <div className="space-y-3">
-            {sortedStores.map((store) => <div key={store.id} className="[content-visibility:auto] [contain-intrinsic-size:150px]"><StoreCard store={store} /></div>)}
+            {sortedStores.map((store) => (
+              <div key={store.id} className="[content-visibility:auto] [contain-intrinsic-size:150px]">
+                <StoreCard store={store} />
+              </div>
+            ))}
           </div>
         )}
         <PageFooter />

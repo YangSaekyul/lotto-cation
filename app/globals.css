@@ -11,24 +11,32 @@
   --rank-one: #c83b3b;
   --rank-two: #d97120;
   --rank-three: #3174b8;
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
 }
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
   background: #eef1ed;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
 }
 
 button,
@@ -36,6 +44,7 @@ input,
 select,
 textarea {
   font: inherit;
+  touch-action: manipulation;
 }
 
 button,
@@ -43,6 +52,12 @@ a,
 select,
 label {
   -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+input,
+textarea {
+  font-size: 16px !important; /* Prevents auto-zoom on iOS Safari */
 }
 
 button:focus-visible,
@@ -52,6 +67,16 @@ select:focus-visible,
 textarea:focus-visible {
   outline: 3px solid rgb(15 138 95 / 30%);
   outline-offset: 2px;
+}
+
+/* Hide scrollbars on mobile carousels while keeping smooth scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .map-grid {
@@ -65,15 +90,21 @@ textarea:focus-visible {
 }
 
 .safe-bottom {
-  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.safe-top {
+  padding-top: max(0.5rem, env(safe-area-inset-top));
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .pressable {
-    transition: transform 150ms ease, background-color 150ms ease, border-color 150ms ease;
+    transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1), background-color 120ms ease, border-color 120ms ease, opacity 120ms ease;
   }
 
   .pressable:active {
-    transform: scale(0.98);
+    transform: scale(0.97);
+    opacity: 0.92;
   }
 }
+

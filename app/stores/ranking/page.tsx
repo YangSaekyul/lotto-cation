@@ -156,59 +156,63 @@ export default function StoreRankingPage() {
         </div>
 
         {/* CITY SELECTOR (시/도) */}
-        <label className="relative mt-4 block">
+        <label className="mt-4 block">
           <span className="mb-1 block text-[13px] font-bold text-[#68736D]">시 / 도</span>
-          <select
-            value={selectedCity}
-            onChange={(e) => {
-              setSelectedCity(e.target.value);
-              setSelectedDistrict("전체"); // Reset district when city changes
-            }}
-            className="min-h-14 w-full appearance-none rounded-2xl border border-[#D5DDD6] bg-white px-4 pr-12 text-[16px] font-extrabold text-[#17211C]"
-          >
-            {CITY_OPTIONS.map((city) => (
-              <option key={city} value={city}>
-                {city === "전체" ? "전국 전체" : city}
-              </option>
-            ))}
-          </select>
-          <ChevronDown
-            aria-hidden="true"
-            className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#637068]"
-            size={22}
-          />
-        </label>
-
-        {/* DISTRICT SELECTOR (구/읍/면) — optional, only shown when a city is selected */}
-        {showDistrict && (
-          <label className="relative mt-3 block">
-            <span className="mb-1 flex items-center gap-1 text-[13px] font-bold text-[#68736D]">
-              구 / 읍 / 면 <span className="font-medium text-[#9AA49E]">(선택)</span>
-            </span>
+          <div className="relative">
             <select
-              value={selectedDistrict}
-              onChange={(e) => setSelectedDistrict(e.target.value)}
-              disabled={districtsLoading}
-              className="min-h-14 w-full appearance-none rounded-2xl border border-[#D5DDD6] bg-white px-4 pr-12 text-[16px] font-extrabold text-[#17211C] disabled:opacity-60"
+              value={selectedCity}
+              onChange={(e) => {
+                setSelectedCity(e.target.value);
+                setSelectedDistrict("전체"); // Reset district when city changes
+              }}
+              className="min-h-14 w-full appearance-none rounded-2xl border border-[#D5DDD6] bg-white px-4 pr-12 text-[16px] font-extrabold text-[#17211C]"
             >
-              <option value="전체">전체 (시 전체)</option>
-              {districtsLoading ? (
-                <option value="전체" disabled>
-                  불러오는 중...
+              {CITY_OPTIONS.map((city) => (
+                <option key={city} value={city}>
+                  {city === "전체" ? "전국 전체" : city}
                 </option>
-              ) : (
-                districtOptions.map((district) => (
-                  <option key={district} value={district}>
-                    {district}
-                  </option>
-                ))
-              )}
+              ))}
             </select>
             <ChevronDown
               aria-hidden="true"
               className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#637068]"
               size={22}
             />
+          </div>
+        </label>
+
+        {/* DISTRICT SELECTOR (구/읍/면) — optional, only shown when a city is selected */}
+        {showDistrict && (
+          <label className="mt-3 block">
+            <span className="mb-1 flex items-center gap-1 text-[13px] font-bold text-[#68736D]">
+              구 / 읍 / 면 <span className="font-medium text-[#9AA49E]">(선택)</span>
+            </span>
+            <div className="relative">
+              <select
+                value={selectedDistrict}
+                onChange={(e) => setSelectedDistrict(e.target.value)}
+                disabled={districtsLoading}
+                className="min-h-14 w-full appearance-none rounded-2xl border border-[#D5DDD6] bg-white px-4 pr-12 text-[16px] font-extrabold text-[#17211C] disabled:opacity-60"
+              >
+                <option value="전체">전체 (시 전체)</option>
+                {districtsLoading ? (
+                  <option value="전체" disabled>
+                    불러오는 중...
+                  </option>
+                ) : (
+                  districtOptions.map((district) => (
+                    <option key={district} value={district}>
+                      {district}
+                    </option>
+                  ))
+                )}
+              </select>
+              <ChevronDown
+                aria-hidden="true"
+                className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#637068]"
+                size={22}
+              />
+            </div>
           </label>
         )}
 

@@ -1,20 +1,30 @@
-import { ChevronRight, MapPin } from "lucide-react";
+import { ChevronRight, MapPin, Navigation, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { RankBadge } from "@/components/rank-badge";
 import type { WinRank } from "@/lib/db";
+import { buildNaverDirectionsUrl } from "@/lib/map-features";
 
 type StoreCardProps = {
   store: {
     id: string;
     name: string;
     address: string;
+    latitude?: number | null;
+    longitude?: number | null;
     distance?: string;
     distanceFormatted?: string;
     totalWins: number;
     rankCounts: Partial<Record<WinRank, number>>;
     status?: string;
+    geocode_status?: string;
   };
   rank?: number;
+};
+
+const MEDAL_EMOJIS: Record<number, string> = {
+  1: "🥇",
+  2: "🥈",
+  3: "🥉",
 };
 
 export function StoreCard({ store, rank }: StoreCardProps) {
@@ -23,39 +33,80 @@ export function StoreCard({ store, rank }: StoreCardProps) {
   );
 
   const displayDistance = store.distanceFormatted || store.distance || "";
+  const directionsUrl = buildNaverDirectionsUrl(store);
 
   return (
-    <Link
-      href={`/store/${store.id}`}
-      className="pressable block rounded-2xl border border-[#DFE4DF] bg-white p-4 hover:border-[#B9D6C8]"
-    >
-      <div className="flex items-start gap-3">
-        {rank ? (
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#17211C] text-[18px] font-black text-white">
-            {rank}
-          </span>
-        ) : (
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#E8F4EF] text-[#0F8A5F]">
-            <MapPin aria-hidden="true" size={22} />
-          </span>
-        )}
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="truncate text-[18px] font-extrabold tracking-[-0.02em]">{store.name}</h3>
-            <ChevronRight aria-hidden="true" className="shrink-0 text-[#8B958F]" size={22} />
-          </div>
-          <p className="mt-1 truncate text-[15px] text-[#68736D]">{store.address}</p>
-          {displayDistance && (
-            <p className="mt-1 text-[14px] font-bold text-[#0F8A5F]">{displayDistance}</p>
+    <div className="group relative rounded-2xl border border-[#DFE4DF] bg-white p-4 shadow-[0_2px_8px_rgba(0,0,0,0.03)] transition-all hover:border-[#B9D6C8] active:bg-[#F6F8F6] active:scale-[0.99]">
+      <Link href={`/store/${store.id}`} className="block">
+        <div className="flex items-start gap-3">
+          {rank ? (
+            <span
+              className={`flex size-10 shrink-0 items-center justify-center rounded-xl text-[16px] font-black text-white shadow-sm ${
+                rank === 1
+                  ? "bg-[#D4AF37]"
+                  : rank === 2
+                  ? "bg-[#8E979E]"
+                  : rank === 3
+                  ? "bg-[#CD7F32]"
+                  : "bg-[#17211C]"
+              }`}
+            >
+              {MEDAL_EMOJIS[rank] || rank}
+            </span>
+          ) : (
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#E8F4EF] text-[#0F8A5F]">
+              <MapPin aria-hidden="true" size={22} />
+            </span>
           )}
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
+                <h3 className="truncate text-[17px] font-black tracking-[-0.02em] text-[#17211C]">
+                  {store.name}
+                </h3>
+                {store.geocode_status === "official_verified" && (
+                  <span className="inline-flex items-center gap-0.5 rounded-full bg-[#EFF6FF] px-1.5 py-0.5 text-[10px] font-extrabold text-[#1D4ED8]">
+                    <ShieldCheck size={11} /> 공식
+                  </span>
+                )}
+              </div>
+              <ChevronRight aria-hidden="true" className="shrink-0 text-[#8B958F] group-hover:text-[#0F8A5F] transition-colors" size={20} />
+            </div>
+
+            <p className="mt-1 line-clamp-1 text-[13px] text-[#68736D] leading-tight">{store.address}</p>
+
+            <div className="mt-1.5 flex items-center gap-2 flex-wrap text-[13px]">
+              {displayDistance && (
+                <span className="inline-flex items-center rounded-md bg-[#E8F4EF] px-1.5 py-0.5 font-black text-[#0F8A5F] text-[12px]">
+                  {displayDistance}
+                </span>
+              )}
+              <span className="font-extrabold text-[#4F5B54]">과거 당첨 총 {store.totalWins}회</span>
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="mt-3 flex flex-wrap gap-1.5 border-t border-[#EDF0ED] pt-3">
-        {visibleRanks.map((item) => (
-          <RankBadge key={item} rank={item} count={store.rankCounts[item]!} />
-        ))}
-        <span className="ml-auto self-center text-[14px] font-bold text-[#4F5B54]">총 {store.totalWins}회</span>
-      </div>
-    </Link>
+
+        {/* Win Ranks Badges */}
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-1.5 border-t border-[#EDF0ED] pt-2.5">
+          <div className="flex flex-wrap gap-1">
+            {visibleRanks.map((item) => (
+              <RankBadge key={item} rank={item} count={store.rankCounts[item]!} />
+            ))}
+          </div>
+
+          <a
+            href={directionsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="pressable inline-flex min-h-10 items-center gap-1 rounded-xl bg-[#0F8A5F] px-3 py-1.5 text-[12px] font-extrabold text-white shadow-xs"
+          >
+            <Navigation size={13} />
+            길찾기
+          </a>
+        </div>
+      </Link>
+    </div>
   );
 }

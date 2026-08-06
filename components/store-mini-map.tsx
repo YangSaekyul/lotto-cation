@@ -30,10 +30,10 @@ export function StoreMiniMap({ store }: StoreMiniMapProps) {
 
     const tryInit = () => {
       if (isCancelled) return;
-      if (!mapContainerRef.current || !store.latitude || !store.longitude) return;
+      if (!store.latitude || !store.longitude) return;
 
-      if (!window.naver?.maps) {
-        setTimeout(tryInit, 200);
+      if (!mapContainerRef.current || !window.naver?.maps) {
+        setTimeout(tryInit, 100);
         return;
       }
 

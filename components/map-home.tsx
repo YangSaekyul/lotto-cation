@@ -202,6 +202,14 @@ export function MapHome() {
     }
   }, []);
 
+function getRadiusFromZoom(zoom: number): number {
+  if (zoom >= 16) return 0.3;
+  if (zoom === 15) return 0.5;
+  if (zoom === 14) return 1;
+  if (zoom === 13) return 3;
+  return 5;
+}
+
   const scheduleViewportRefresh = useCallback(
     (map: any) => {
       if (viewportTimerRef.current) clearTimeout(viewportTimerRef.current);
@@ -211,8 +219,15 @@ export function MapHome() {
         centerLocationRef.current = nextCenter;
         setCenterLocation(nextCenter);
         if (locationStatusRef.current === "locating") return;
-        // 마커와 반경 목록 모두 같은 반경 데이터(radius)로 채운다 → 두 카운터가 항상 일치.
-        fetchNearbyStores(center.lat(), center.lng(), radiusRef.current);
+
+        const zoom = map.getZoom();
+        const nextRadius = getRadiusFromZoom(zoom);
+        if (radiusRef.current !== nextRadius) {
+          radiusRef.current = nextRadius;
+          setRadius(nextRadius);
+        }
+
+        fetchNearbyStores(center.lat(), center.lng(), nextRadius);
       }, 240);
     },
     [fetchNearbyStores],
@@ -538,6 +553,8 @@ export function MapHome() {
         markProgrammaticMove();
         map.setCenter(target);
         map.setZoom(17);
+        radiusRef.current = 0.3;
+        setRadius(0.3);
 
         infoWindowRef.current?.close();
         const preview = document.createElement("div");

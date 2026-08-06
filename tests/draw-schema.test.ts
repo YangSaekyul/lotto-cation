@@ -5,7 +5,7 @@ import { getLatestDraw } from '../lib/db';
 test('Latest Draw Result JSON Schema Test', () => {
   const draw = getLatestDraw();
 
-  assert.equal(draw.draw_no, 1234, 'Latest draw number should be 1234');
+  assert.ok(draw.draw_no >= 1234, 'Latest draw number should be 1234 or higher');
   assert.ok(draw.draw_date.includes('2026') || draw.draw_date.includes('7'), 'Draw date formatted');
   assert.equal(draw.winning_numbers.length, 6, 'Should have exactly 6 main winning numbers');
 

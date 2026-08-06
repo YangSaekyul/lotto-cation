@@ -256,7 +256,7 @@ test('Integration: Full flow Seoul + Gangnam-gu -> stores only in Gangnam-gu', (
   assert.ok(districts.includes('강남구'));
   
   // 3. User selects district = 강남구
-  const district = '강남구';
+  const district: string = '강남구';
   
   // 4. Fetch stores
   const stores = getTopStores('all', city, 50, district);

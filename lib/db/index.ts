@@ -189,6 +189,19 @@ export function getDistricts(regionFilter: string = "전체"): string[] {
   return [...set].sort((a, b) => a.localeCompare(b, "ko"));
 }
 
+export function getDrawDateMap(): Record<number, string> {
+  const db = loadDb();
+  const map: Record<number, string> = {};
+  for (const draw of db.draws) {
+    if (draw.draw_date && draw.draw_date.length === 8) {
+      map[draw.draw_no] = `${draw.draw_date.slice(0, 4)}.${draw.draw_date.slice(4, 6)}.${draw.draw_date.slice(6, 8)}`;
+    } else if (draw.draw_date) {
+      map[draw.draw_no] = draw.draw_date;
+    }
+  }
+  return map;
+}
+
 export function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371; // Radius of the Earth in km
   const dLat = ((lat2 - lat1) * Math.PI) / 180;

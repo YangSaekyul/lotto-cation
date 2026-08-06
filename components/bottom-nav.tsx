@@ -17,7 +17,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="주요 메뉴"
-      className="fixed inset-x-0 bottom-0 z-50 mx-auto grid w-full max-w-3xl grid-cols-4 border-t border-[#DCE2DD] bg-white/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-4px_16px_rgba(0,0,0,0.04)] backdrop-blur-md"
+      className="fixed inset-x-0 bottom-0 z-50 mx-auto grid w-full max-w-3xl grid-cols-4 border-t border-[#DCE2DD] bg-white/95 px-2 sm:px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:pb-3 pt-1.5 sm:pt-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] backdrop-blur-md"
     >
       {items.map((item) => {
         const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -28,13 +28,13 @@ export function BottomNav() {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`pressable flex min-h-[52px] flex-col items-center justify-center gap-1 rounded-2xl px-1 text-[12px] font-extrabold transition-all ${
+            className={`pressable flex min-h-[52px] sm:min-h-[64px] flex-col items-center justify-center gap-1 sm:gap-1.5 rounded-2xl px-1 sm:px-3 text-[12px] sm:text-[14px] font-black transition-all ${
               active
                 ? "bg-[#E8F4EF] text-[#0F8A5F]"
                 : "text-[#68736D] hover:bg-[#F4F6F4] hover:text-[#17211C]"
             }`}
           >
-            <Icon aria-hidden="true" size={21} strokeWidth={active ? 2.5 : 2} />
+            <Icon aria-hidden="true" className="size-[21px] sm:size-[25px]" strokeWidth={active ? 2.5 : 2} />
             <span className="leading-none">{item.label}</span>
           </Link>
         );

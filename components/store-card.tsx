@@ -19,6 +19,8 @@ type StoreCardProps = {
     geocode_status?: string;
   };
   rank?: number;
+  isSelected?: boolean;
+  onSelect?: () => void;
 };
 
 const MEDAL_EMOJIS: Record<number, string> = {
@@ -27,17 +29,32 @@ const MEDAL_EMOJIS: Record<number, string> = {
   3: "🥉",
 };
 
-export function StoreCard({ store, rank }: StoreCardProps) {
+export function StoreCard({ store, rank, isSelected, onSelect }: StoreCardProps) {
   const visibleRanks = ([1, 2, 3, 4, 5] as WinRank[]).filter(
     (item) => store.rankCounts && (store.rankCounts[item] ?? 0) > 0
   );
 
   const displayDistance = store.distanceFormatted || store.distance || "";
   const directionsUrl = buildNaverDirectionsUrl(store);
+  const detailUrl = `/store/${store.id}`;
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (onSelect) {
+      e.preventDefault();
+      onSelect();
+    }
+  };
 
   return (
-    <div className="group relative rounded-2xl border border-[#DFE4DF] bg-white p-4 shadow-[0_2px_8px_rgba(0,0,0,0.03)] transition-all hover:border-[#B9D6C8] active:bg-[#F6F8F6] active:scale-[0.99]">
-      <Link href={`/store/${store.id}`} className="block">
+    <div
+      onClick={handleCardClick}
+      className={`group relative rounded-2xl border p-4 transition-all ${
+        isSelected
+          ? "border-2 border-[#0F8A5F] bg-[#F0F8F4] shadow-md ring-2 ring-[#0F8A5F]/20"
+          : "border-[#DFE4DF] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-[#B9D6C8] active:bg-[#F6F8F6]"
+      }`}
+    >
+      <div className="block cursor-pointer">
         <div className="flex items-start gap-3">
           {rank ? (
             <span
@@ -70,8 +87,15 @@ export function StoreCard({ store, rank }: StoreCardProps) {
                     <ShieldCheck size={11} /> 공식
                   </span>
                 )}
+                {isSelected && (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-[#0F8A5F] px-2 py-0.5 text-[11px] font-black text-white shadow-xs">
+                    📍 지도 선택됨 (한 번 더 누르면 상세)
+                  </span>
+                )}
               </div>
-              <ChevronRight aria-hidden="true" className="shrink-0 text-[#8B958F] group-hover:text-[#0F8A5F] transition-colors" size={20} />
+              <Link href={detailUrl} onClick={(e) => e.stopPropagation()} className="pressable flex items-center gap-0.5 text-[12px] font-black text-[#0F8A5F] hover:underline">
+                {isSelected ? "상세보기 >" : <ChevronRight aria-hidden="true" className="shrink-0 text-[#8B958F] group-hover:text-[#0F8A5F] transition-colors" size={20} />}
+              </Link>
             </div>
 
             <p className="mt-1 line-clamp-1 text-[13px] text-[#68736D] leading-tight">{store.address}</p>
@@ -86,27 +110,27 @@ export function StoreCard({ store, rank }: StoreCardProps) {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Win Ranks Badges */}
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-1.5 border-t border-[#EDF0ED] pt-2.5">
-          <div className="flex flex-wrap gap-1">
-            {visibleRanks.map((item) => (
-              <RankBadge key={item} rank={item} count={store.rankCounts[item]!} />
-            ))}
-          </div>
+      {/* Win Ranks Badges & Directions */}
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-1.5 border-t border-[#EDF0ED] pt-2.5">
+        <Link href={detailUrl} onClick={(e) => e.stopPropagation()} className="flex flex-wrap gap-1">
+          {visibleRanks.map((item) => (
+            <RankBadge key={item} rank={item} count={store.rankCounts[item]!} />
+          ))}
+        </Link>
 
-          <a
-            href={directionsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="pressable inline-flex min-h-10 items-center gap-1 rounded-xl bg-[#0F8A5F] px-3 py-1.5 text-[12px] font-extrabold text-white shadow-xs"
-          >
-            <Navigation size={13} />
-            길찾기
-          </a>
-        </div>
-      </Link>
+        <a
+          href={directionsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="pressable inline-flex min-h-10 items-center gap-1 rounded-xl bg-[#0F8A5F] px-3 py-1.5 text-[12px] font-extrabold text-white shadow-xs"
+        >
+          <Navigation size={13} />
+          길찾기
+        </a>
+      </div>
     </div>
   );
 }

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { BarChart3 } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { BarChart3, Flame } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
+import { LottoBall } from "@/components/lotto-balls";
 import { PageFooter, ProbabilityNotice } from "@/components/page-footer";
 import type { NumberFrequency } from "@/lib/db";
 
@@ -45,6 +46,12 @@ export default function StatsPage() {
 
   const activePeriodLabel = PERIODS.find((p) => p.months === selectedMonths)?.label || "6개월";
 
+  const top6Numbers = useMemo(() => {
+    if (!frequencies.length) return [];
+    const sorted = [...frequencies].sort((a, b) => b.count - a.count || a.number - b.number);
+    return sorted.slice(0, 6);
+  }, [frequencies]);
+
   return (
     <>
       <AppHeader title="번호 통계" eyebrow="1–45 출현 기록" />
@@ -84,6 +91,40 @@ export default function StatsPage() {
               </button>
             ))}
           </div>
+        </section>
+
+        {/* TOP 6 MOST FREQUENT LOTTO BALLS CARD */}
+        <section className="mt-5 rounded-2xl border border-[#DFE4DF] bg-white p-4 sm:p-5 shadow-xs">
+          <div className="mb-3.5 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-[#FEF3C7] text-[#D97706]">
+                <Flame size={18} />
+              </span>
+              <div>
+                <h2 className="text-[17px] font-black tracking-[-0.03em] text-[#17211C]">
+                  최근 {activePeriodLabel} 최다 출현 TOP 6 번호
+                </h2>
+                <p className="text-[12px] font-extrabold text-[#0F8A5F]">
+                  가장 자주 등장한 6개 당첨 번호 (실제 로또 색상)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="py-6 text-center text-[14px] font-bold text-[#68736D]">
+              최다 출현 번호를 계산하는 중입니다...
+            </div>
+          ) : top6Numbers.length > 0 ? (
+            <div className="flex w-full items-center justify-between gap-1 rounded-2xl border border-[#E3E8E4] bg-[#F6F8F6] p-3.5 sm:p-4">
+              {top6Numbers.map((item) => (
+                <div key={item.number} className="flex min-w-0 flex-1 flex-col items-center justify-center">
+                  <LottoBall number={item.number} size="lg" />
+                  <span className="mt-1.5 text-[11px] sm:text-[13px] font-black text-[#0F8A5F]">{item.count}회</span>
+                </div>
+              ))}
+            </div>
+          ) : null}
         </section>
 
         <section

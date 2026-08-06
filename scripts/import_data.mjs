@@ -64,10 +64,21 @@ function main() {
   const officialIdsByKey = new Map();
   const keysByOfficialId = new Map();
 
+  const officialNameByAddress = new Map();
+  for (const item of records) {
+    const normName = normalizeName(item.name || '');
+    const normAddr = normalizeAddress(item.address || '');
+    if (normAddr && normName && !normName.includes('기타_검증용')) {
+      officialNameByAddress.set(normAddr, normName);
+    }
+  }
+
   for (const item of records) {
     const storeId = item.store_id ? String(item.store_id) : null;
     if (!storeId) continue;
-    const key = `nameaddr:${normalizeName(item.name || '')}::${normalizeAddress(item.address || '')}`;
+    const normName = normalizeName(item.name || '');
+    const normAddr = normalizeAddress(item.address || '');
+    const key = `nameaddr:${normName}::${normAddr}`;
     officialIdsByKey.set(key, storeId);
     if (!keysByOfficialId.has(storeId)) keysByOfficialId.set(storeId, new Set());
     keysByOfficialId.get(storeId).add(key);
@@ -76,8 +87,13 @@ function main() {
   for (const item of records) {
     const rawName = item.name || '';
     const rawAddress = item.address || '';
-    const normName = normalizeName(rawName);
+    let normName = normalizeName(rawName);
     const normAddr = normalizeAddress(rawAddress);
+
+    if (normName.includes('기타_검증용') && officialNameByAddress.has(normAddr)) {
+      normName = officialNameByAddress.get(normAddr);
+    }
+
     const storeId = item.store_id ? String(item.store_id) : null;
     const isOnline = isOnlineStore(rawName, rawAddress, storeId);
     const cachedGeocode = geocodeCache[rawAddress.trim()];
@@ -96,9 +112,12 @@ function main() {
       const generatedId = officialId
         ? (keysByOfficialId.get(officialId).size === 1 ? officialId : `${officialId}_${stableSuffix(mapKey)}`)
         : `legacy_${stableSuffix(mapKey)}`;
+      const displayName = rawName.includes('기타_검증용') && officialNameByAddress.has(normAddr)
+        ? officialNameByAddress.get(normAddr)
+        : rawName;
       store = {
         id: generatedId,
-        name: rawName,
+        name: displayName,
         normalized_name: normName,
         address: rawAddress,
         normalized_address: normAddr,
@@ -117,6 +136,10 @@ function main() {
       };
       storeMap.set(mapKey, store);
     } else {
+      if (store.name.includes('기타_검증용') && !rawName.includes('기타_검증용')) {
+        store.name = rawName;
+        store.normalized_name = normName;
+      }
       // Prefer an available official coordinate, otherwise reapply the durable Naver cache.
       const officialCoordinatesAvailable = item.latitude != null && item.longitude != null;
       if (

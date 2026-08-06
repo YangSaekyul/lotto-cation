@@ -28,7 +28,6 @@ const RADIUS_OPTIONS: RadiusOption[] = [
   { value: 1, label: "1km", zoom: 14 },
   { value: 3, label: "3km", zoom: 13 },
   { value: 5, label: "5km", zoom: 12 },
-  { value: 10, label: "10km", zoom: 11 },
 ];
 const PODIUM_STYLES: Record<PodiumRank, { background: string; foreground: string; label: string }> = {
   1: { background: "#D4AF37", foreground: "#17211C", label: "1위" },
@@ -63,6 +62,7 @@ export function MapHome() {
   const [searchQuery, setSearchQuery] = useState("");
   const [mapError, setMapError] = useState<string | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
 
   const mapElementRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
@@ -514,10 +514,80 @@ export function MapHome() {
         infoWindow.open(map, marker);
         infoWindowRef.current = infoWindow;
         activeStoreIdRef.current = store.id;
+        setSelectedStoreId(store.id);
       });
       markersRef.current.push(marker);
     }
   }, [isMapLoaded, filteredStores]);
+
+  const handleSelectStoreCard = useCallback(
+    (store: NearbyStoreRecord) => {
+      const detailUrl = `/store/${encodeURIComponent(store.id)}`;
+
+      if (selectedStoreId === store.id || activeStoreIdRef.current === store.id) {
+        window.location.href = detailUrl;
+        return;
+      }
+
+      setSelectedStoreId(store.id);
+      activeStoreIdRef.current = store.id;
+
+      if (mapInstanceRef.current && window.naver?.maps && store.latitude != null && store.longitude != null) {
+        const map = mapInstanceRef.current;
+        const target = new window.naver.maps.LatLng(store.latitude, store.longitude);
+        markProgrammaticMove();
+        map.setCenter(target);
+        map.setZoom(17);
+
+        infoWindowRef.current?.close();
+        const preview = document.createElement("div");
+        preview.setAttribute("role", "button");
+        preview.tabIndex = 0;
+        preview.style.cssText =
+          "width:min(260px,calc(100vw - 48px));padding:14px;border-radius:16px;background:#fff;color:#17211c;box-shadow:0 8px 24px rgba(0,0,0,.2);cursor:pointer;font-family:inherit";
+
+        const title = document.createElement("strong");
+        title.textContent = store.name;
+        title.style.cssText = "display:block;font-size:16px;line-height:1.35;margin-bottom:5px";
+        const address = document.createElement("p");
+        address.textContent = store.address;
+        address.style.cssText = "margin:0 0 8px;color:#68736d;font-size:13px;line-height:1.4";
+        const wins = document.createElement("p");
+        wins.textContent = `과거 당첨 이력 총 ${store.totalWins}회`;
+        wins.style.cssText = "margin:0 0 11px;color:#0f8a5f;font-size:13px;font-weight:800";
+        const actions = document.createElement("div");
+        actions.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:8px";
+        const hint = document.createElement("span");
+        hint.textContent = "한 번 더 누르면 상세";
+        hint.style.cssText = "font-size:11px;color:#7b867f";
+        const directions = document.createElement("a");
+        directions.href = buildNaverDirectionsUrl(store);
+        directions.target = "_blank";
+        directions.rel = "noopener noreferrer";
+        directions.textContent = "길찾기";
+        directions.style.cssText =
+          "display:flex;min-height:40px;align-items:center;border-radius:10px;background:#0f8a5f;padding:0 14px;color:#fff;font-size:13px;font-weight:900;text-decoration:none";
+        directions.addEventListener("click", (event) => event.stopPropagation());
+        actions.append(hint, directions);
+        preview.append(title, address, wins, actions);
+        preview.addEventListener("click", () => {
+          window.location.href = detailUrl;
+        });
+
+        const infoWindow = new window.naver.maps.InfoWindow({
+          content: preview,
+          borderWidth: 0,
+          backgroundColor: "transparent",
+          disableAnchor: true,
+          disableAutoPan: true,
+          pixelOffset: new window.naver.maps.Point(0, 22),
+        });
+        infoWindow.open(map, target);
+        infoWindowRef.current = infoWindow;
+      }
+    },
+    [selectedStoreId, markProgrammaticMove]
+  );
 
   const sortedStores = useMemo(() => sortNearbyStores(filteredStores, sortMode), [filteredStores, sortMode]);
 
@@ -565,11 +635,11 @@ export function MapHome() {
   };
 
   return (
-    <main className="relative min-h-dvh overflow-x-hidden pb-24">
-      <section aria-label="판매점 지도" className="map-grid relative h-[58dvh] min-h-[min(460px,55dvh)] overflow-hidden border-b border-[#D6DED7]">
-        {/* Top Floating Bar */}
-        <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between p-3.5 pt-[max(0.75rem,env(safe-area-inset-top))] sm:p-6">
-          <div className="flex min-h-11 items-center gap-2 rounded-2xl border border-[#DDE4DE] bg-white/95 px-3 py-1 shadow-sm backdrop-blur-md">
+    <main className="flex h-dvh flex-col overflow-hidden pb-16 sm:pb-24">
+      <section aria-label="판매점 지도" className="map-grid relative h-[42dvh] min-h-[280px] shrink-0 border-b border-[#D6DED7]">
+        {/* Top Floating Bar: Centered Logo & Right GPS Button */}
+        <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-center p-3.5 pt-[max(0.75rem,env(safe-area-inset-top))] sm:p-6">
+          <div className="flex min-h-11 items-center gap-2 rounded-2xl border border-[#DDE4DE] bg-white/95 px-4 py-1.5 shadow-md backdrop-blur-md">
             <span className="flex size-7.5 items-center justify-center rounded-lg bg-[#0F8A5F] text-white shadow-xs">
               <Ticket aria-hidden="true" size={17} />
             </span>
@@ -578,19 +648,20 @@ export function MapHome() {
               <p className="text-[10px] font-extrabold text-[#0F8A5F] tracking-wide">LOTTO + RI</p>
             </div>
           </div>
+
           <button
             type="button"
             onClick={requestLocation}
-            className="pressable flex size-11 items-center justify-center rounded-2xl border border-[#DDE4DE] bg-white/95 text-[#0F8A5F] shadow-sm backdrop-blur-md active:bg-[#E8F4EF]"
+            className="pressable absolute right-3.5 top-3.5 z-20 flex size-11 items-center justify-center rounded-2xl border border-[#DDE4DE] bg-white/95 text-[#0F8A5F] shadow-md backdrop-blur-md active:bg-[#E8F4EF] sm:right-6 sm:top-6"
             aria-label="현재 위치로 이동"
           >
             <LocateFixed aria-hidden="true" size={22} />
           </button>
         </div>
 
-        {/* Row 1: Radius Selector */}
-        <div className="no-scrollbar absolute left-3.5 right-3.5 top-[60px] z-20 flex items-center gap-2 overflow-x-auto pb-1 pt-[max(0.25rem,env(safe-area-inset-top))] sm:left-6 sm:right-6">
-          <div className="flex shrink-0 items-center rounded-full border border-[#D7DED8] bg-white/95 p-1 shadow-sm backdrop-blur-md">
+        {/* Row 1: Radius Selector Floating Bar (Left-aligned) */}
+        <div className="no-scrollbar absolute left-3.5 right-3.5 top-[64px] z-20 flex justify-start overflow-x-auto pb-1 pt-[max(0.25rem,env(safe-area-inset-top))] sm:left-6 sm:right-6">
+          <div className="flex shrink-0 items-center rounded-full border border-[#D7DED8] bg-white/95 p-1 shadow-md backdrop-blur-md">
             {RADIUS_OPTIONS.map((option) => (
               <button
                 key={option.value}
@@ -608,62 +679,9 @@ export function MapHome() {
           </div>
         </div>
 
-        {/* Row 2: Win Rank Multi-Select Filter */}
-        <div className="no-scrollbar absolute left-3.5 right-3.5 top-[108px] z-20 flex items-center gap-1.5 overflow-x-auto pb-1 pt-[max(0.25rem,env(safe-area-inset-top))] sm:left-6 sm:right-6">
-          <div className="flex shrink-0 items-center gap-1 rounded-full border border-[#D7DED8] bg-white/95 p-1 shadow-sm backdrop-blur-md">
-            <button
-              type="button"
-              onClick={() => setSelectedWinRanks([])}
-              className={`min-h-9 shrink-0 rounded-full px-3 text-[12px] font-extrabold transition-all ${
-                selectedWinRanks.length === 0
-                  ? "bg-[#17211C] text-white shadow-xs"
-                  : "text-[#68736D] hover:text-[#17211C] active:bg-[#F2F5F3]"
-              }`}
-            >
-              전체
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleWinRank(1)}
-              className={`flex min-h-9 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[12px] font-extrabold transition-all ${
-                selectedWinRanks.includes(1)
-                  ? "border border-[#F59E0B] bg-[#FEF3C7] font-black text-[#92400E] shadow-xs"
-                  : "text-[#556159] hover:text-[#17211C]"
-              }`}
-            >
-              <span className="inline-block size-2 rounded-full bg-[#D4AF37]" />
-              1등 배출
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleWinRank(2)}
-              className={`flex min-h-9 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[12px] font-extrabold transition-all ${
-                selectedWinRanks.includes(2)
-                  ? "border border-[#94A3B8] bg-[#F1F5F9] font-black text-[#1E293B] shadow-xs"
-                  : "text-[#556159] hover:text-[#17211C]"
-              }`}
-            >
-              <span className="inline-block size-2 rounded-full bg-[#A8AFB7]" />
-              2등 배출
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleWinRank(3)}
-              className={`flex min-h-9 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[12px] font-extrabold transition-all ${
-                selectedWinRanks.includes(3)
-                  ? "border border-[#F97316] bg-[#FFEDD5] font-black text-[#9A3412] shadow-xs"
-                  : "text-[#556159] hover:text-[#17211C]"
-              }`}
-            >
-              <span className="inline-block size-2 rounded-full bg-[#CD7F32]" />
-              3등 배출
-            </button>
-          </div>
-        </div>
-
         {/* Location Denied Search Form */}
         {locationStatus === "denied" && (
-          <div className="absolute left-3.5 right-3.5 top-[152px] z-20 sm:left-6 sm:right-6">
+          <div className="absolute left-3.5 right-3.5 top-[116px] z-20 sm:left-6 sm:right-6">
             {locationMessage && (
               <p className="mb-2 rounded-xl bg-white/95 px-3 py-2 text-[12px] font-bold leading-5 text-[#B23B3B] shadow-sm backdrop-blur-md">
                 {locationMessage}
@@ -691,18 +709,6 @@ export function MapHome() {
           </div>
         )}
 
-        {/* Floating Thumb GPS Button on Bottom-Right of Map */}
-        <div className="absolute bottom-10 right-4 z-20">
-          <button
-            type="button"
-            onClick={requestLocation}
-            className="pressable flex size-12 items-center justify-center rounded-2xl border border-[#DDE4DE] bg-white text-[#0F8A5F] shadow-lg active:scale-95"
-            aria-label="현재 위치로 이동"
-          >
-            <LocateFixed aria-hidden="true" size={22} />
-          </button>
-        </div>
-
         {/* Map Container */}
         <div className="relative h-full min-h-[min(460px,55dvh)] w-full bg-[#E5E9E6]">
           <div
@@ -729,37 +735,95 @@ export function MapHome() {
       </section>
 
       {/* Bottom Store List Drawer */}
-      <section aria-labelledby="nearby-title" className="relative z-30 -mt-7 rounded-t-[32px] border-t border-[#D8DFD9] bg-[#F7F8F5] px-4 pt-3.5 shadow-[0_-6px_24px_rgba(0,0,0,0.04)] sm:px-6">
+      <section aria-labelledby="nearby-title" className="relative z-20 -mt-5 flex-1 overflow-y-auto rounded-t-[32px] border-t border-[#D8DFD9] bg-[#F7F8F5] px-4 pb-24 pt-3.5 shadow-[0_-6px_24px_rgba(0,0,0,0.06)] sm:px-6">
         <div aria-hidden="true" className="mx-auto mb-3.5 h-1.5 w-12 rounded-full bg-[#C2CAC4]" />
-        <div className="mb-4 flex flex-col gap-2.5 sm:flex-row sm:items-end sm:justify-between">
+        
+        {/* Drawer Header Area */}
+        <div className="mb-4 flex flex-col gap-3">
           <div>
             <p className="text-[13px] font-extrabold text-[#0F8A5F]">
               {locationStatus === "granted" ? "현재 위치 기준" : locationStatus === "locating" ? "현재 위치 확인 중" : "선택한 중심 위치 기준"} ({radiusLabel(radius)} 반경)
-              {selectedWinRanks.length > 0 && ` · ${selectedWinRanks.sort().map((r) => `${r}등`).join("·")} 배출 필터`}
+              {selectedWinRanks.length > 0 && ` · ${selectedWinRanks.sort().map((r) => `${r}등`).join("·")} 필터`}
             </p>
             <h1 id="nearby-title" className="mt-0.5 text-[22px] font-black tracking-[-0.04em] text-[#17211C] sm:text-[24px]">
               반경 내 판매점 {filteredStores.length}곳
             </h1>
           </div>
-          <div className="flex w-fit self-end sm:self-auto rounded-2xl border border-[#D8DED9] bg-white p-1 shadow-xs" aria-label="판매점 정렬 방식">
-            <button
-              type="button"
-              onClick={() => setSortMode("distance")}
-              className={`min-h-9 rounded-xl px-3.5 text-[13px] font-extrabold transition-all ${
-                sortMode === "distance" ? "bg-[#17211C] text-white shadow-xs" : "text-[#556159] hover:text-[#17211C]"
-              }`}
-            >
-              거리순
-            </button>
-            <button
-              type="button"
-              onClick={() => setSortMode("wins")}
-              className={`min-h-9 rounded-xl px-3.5 text-[13px] font-extrabold transition-all ${
-                sortMode === "wins" ? "bg-[#17211C] text-white shadow-xs" : "text-[#556159] hover:text-[#17211C]"
-              }`}
-            >
-              당첨순
-            </button>
+
+          {/* Controls Bar: Win Rank Filter (No "배출" word) + Sort Modes */}
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#E5EBE6] pt-3">
+            {/* Rank Multi-Select Filter (전체, 1등, 2등, 3등) */}
+            <div className="no-scrollbar flex items-center gap-1 overflow-x-auto py-0.5">
+              <button
+                type="button"
+                onClick={() => setSelectedWinRanks([])}
+                className={`min-h-8 shrink-0 rounded-full px-3 text-[12px] font-extrabold transition-all ${
+                  selectedWinRanks.length === 0
+                    ? "bg-[#17211C] text-white shadow-xs"
+                    : "border border-[#D7DED8] bg-white text-[#68736D] hover:text-[#17211C]"
+                }`}
+              >
+                전체
+              </button>
+              <button
+                type="button"
+                onClick={() => toggleWinRank(1)}
+                className={`flex min-h-8 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[12px] font-extrabold transition-all ${
+                  selectedWinRanks.includes(1)
+                    ? "border border-[#F59E0B] bg-[#FEF3C7] font-black text-[#92400E] shadow-xs"
+                    : "border border-[#D7DED8] bg-white text-[#556159] hover:text-[#17211C]"
+                }`}
+              >
+                <span className="inline-block size-2 rounded-full bg-[#D4AF37]" />
+                1등
+              </button>
+              <button
+                type="button"
+                onClick={() => toggleWinRank(2)}
+                className={`flex min-h-8 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[12px] font-extrabold transition-all ${
+                  selectedWinRanks.includes(2)
+                    ? "border border-[#94A3B8] bg-[#F1F5F9] font-black text-[#1E293B] shadow-xs"
+                    : "border border-[#D7DED8] bg-white text-[#556159] hover:text-[#17211C]"
+                }`}
+              >
+                <span className="inline-block size-2 rounded-full bg-[#A8AFB7]" />
+                2등
+              </button>
+              <button
+                type="button"
+                onClick={() => toggleWinRank(3)}
+                className={`flex min-h-8 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[12px] font-extrabold transition-all ${
+                  selectedWinRanks.includes(3)
+                    ? "border border-[#F97316] bg-[#FFEDD5] font-black text-[#9A3412] shadow-xs"
+                    : "border border-[#D7DED8] bg-white text-[#556159] hover:text-[#17211C]"
+                }`}
+              >
+                <span className="inline-block size-2 rounded-full bg-[#CD7F32]" />
+                3등
+              </button>
+            </div>
+
+            {/* Sort Mode Buttons */}
+            <div className="flex w-fit rounded-2xl border border-[#D8DED9] bg-white p-0.5 shadow-xs" aria-label="판매점 정렬 방식">
+              <button
+                type="button"
+                onClick={() => setSortMode("distance")}
+                className={`min-h-8 rounded-xl px-3 text-[12px] font-extrabold transition-all ${
+                  sortMode === "distance" ? "bg-[#17211C] text-white shadow-xs" : "text-[#556159] hover:text-[#17211C]"
+                }`}
+              >
+                거리순
+              </button>
+              <button
+                type="button"
+                onClick={() => setSortMode("wins")}
+                className={`min-h-8 rounded-xl px-3 text-[12px] font-extrabold transition-all ${
+                  sortMode === "wins" ? "bg-[#17211C] text-white shadow-xs" : "text-[#556159] hover:text-[#17211C]"
+                }`}
+              >
+                당첨순
+              </button>
+            </div>
           </div>
         </div>
 
@@ -777,7 +841,11 @@ export function MapHome() {
           <div className="space-y-3">
             {sortedStores.map((store) => (
               <div key={store.id} className="[content-visibility:auto] [contain-intrinsic-size:150px]">
-                <StoreCard store={store} />
+                <StoreCard
+                  store={store}
+                  isSelected={selectedStoreId === store.id}
+                  onSelect={() => handleSelectStoreCard(store)}
+                />
               </div>
             ))}
           </div>

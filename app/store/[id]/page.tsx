@@ -4,13 +4,14 @@ import { notFound } from "next/navigation";
 import { AppHeader } from "@/components/app-header";
 import { PageFooter, ProbabilityNotice } from "@/components/page-footer";
 import { RankBadge } from "@/components/rank-badge";
-import { getStoreById, type WinRank } from "@/lib/db";
+import { getDrawDateMap, getStoreById, type WinRank } from "@/lib/db";
 
 type StorePageProps = { params: Promise<{ id: string }> };
 
 export default async function StorePage({ params }: StorePageProps) {
   const { id } = await params;
   const store = getStoreById(id);
+  const drawDateMap = getDrawDateMap();
 
   if (!store) {
     notFound();
@@ -129,7 +130,14 @@ export default async function StorePage({ params }: StorePageProps) {
                 >
                   <RankBadge rank={item.rank} />
                   <div className="min-w-0 flex-1">
-                    <p className="font-extrabold text-[#17211C]">제 {item.draw}회</p>
+                    <p className="font-extrabold text-[#17211C]">
+                      제 {item.draw}회
+                      {drawDateMap[item.draw] && (
+                        <span className="ml-1.5 font-bold text-[#68736D] text-[14px]">
+                          ({drawDateMap[item.draw]})
+                        </span>
+                      )}
+                    </p>
                     <p className="text-[14px] text-[#68736D]">
                       {item.source === "donghaeng_official"
                         ? "동행복권 공식 1~5등 수집 기록"

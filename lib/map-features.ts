@@ -37,10 +37,10 @@ export function getBoundsFromCenterAndRadius(lat: number, lng: number, radiusKm:
 export function buildNaverDirectionsUrl(store: {
   name: string;
   address: string;
-  latitude: number | null;
-  longitude: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }): string {
-  if (store.latitude !== null && store.longitude !== null) {
+  if (store.latitude != null && store.longitude != null) {
     return `https://map.naver.com/v5/directions/-/${store.latitude},${store.longitude},${encodeURIComponent(store.name)}/-/walk`;
   }
   return `https://map.naver.com/v5/search/${encodeURIComponent(`${store.name} ${store.address}`)}`;

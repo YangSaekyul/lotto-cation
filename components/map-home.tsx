@@ -31,9 +31,11 @@ const RADIUS_OPTIONS: RadiusOption[] = [
   { value: 10, label: "10km", zoom: 11 },
 ];
 const PODIUM_STYLES: Record<PodiumRank, { background: string; foreground: string; label: string }> = {
-  1: { background: "#D4AF37", foreground: "#17211C", label: "금" },
-  2: { background: "#A8AFB7", foreground: "#17211C", label: "은" },
-  3: { background: "#B87333", foreground: "#FFFFFF", label: "동" },
+  1: { background: "#D4AF37", foreground: "#17211C", label: "1위" },
+  2: { background: "#A8AFB7", foreground: "#17211C", label: "2위" },
+  3: { background: "#CD7F32", foreground: "#FFFFFF", label: "3위" },
+  4: { background: "#2563EB", foreground: "#FFFFFF", label: "4위" },
+  5: { background: "#7C3AED", foreground: "#FFFFFF", label: "5위" },
 };
 
 function radiusLabel(radius: number): string {
@@ -53,6 +55,7 @@ export function MapHome() {
   const [centerLocation, setCenterLocation] = useState(DEFAULT_CENTER);
   const [radius, setRadius] = useState(1);
   const [nearbyStores, setNearbyStores] = useState<NearbyStoreRecord[]>([]);
+  const [selectedWinRanks, setSelectedWinRanks] = useState<number[]>([]);
   const [sortMode, setSortMode] = useState<NearbySort>("wins");
   const [loading, setLoading] = useState(true);
   const [locationStatus, setLocationStatus] = useState<"locating" | "granted" | "denied" | "map">("locating");
@@ -100,19 +103,84 @@ export function MapHome() {
     setLoading(true);
     try {
       const map = mapInstanceRef.current;
-      let url = "";
-      if (map && window.naver?.maps) {
-        const bounds = map.getBounds();
-        const sw = bounds.getSW();
-        const ne = bounds.getNE();
-        url = `/api/stores/bounds?south=${sw.lat()}&west=${sw.lng()}&north=${ne.lat()}&east=${ne.lng()}`;
+      let south: number;
+      let west: number;
+      let north: number;
+      let east: number;
+
+      if (map && window.naver?.maps && typeof map.getBounds === "function") {
+        try {
+          const bounds = map.getBounds();
+          const sw = typeof bounds.getMin === "function" ? bounds.getMin() : typeof bounds.getSW === "function" ? bounds.getSW() : (bounds.min || bounds._min);
+          const ne = typeof bounds.getMax === "function" ? bounds.getMax() : typeof bounds.getNE === "function" ? bounds.getNE() : (bounds.max || bounds._max);
+          const rawSouth = sw ? (typeof sw.lat === "function" ? sw.lat() : sw._lat ?? sw.y) : null;
+          const rawWest = sw ? (typeof sw.lng === "function" ? sw.lng() : sw._lng ?? sw.x) : null;
+          const rawNorth = ne ? (typeof ne.lat === "function" ? ne.lat() : ne._lat ?? ne.y) : null;
+          const rawEast = ne ? (typeof ne.lng === "function" ? ne.lng() : ne._lng ?? ne.x) : null;
+
+          if (
+            typeof rawSouth === "number" &&
+            typeof rawWest === "number" &&
+            typeof rawNorth === "number" &&
+            typeof rawEast === "number"
+          ) {
+            south = Math.min(rawSouth, rawNorth);
+            north = Math.max(rawSouth, rawNorth);
+            west = Math.min(rawWest, rawEast);
+            east = Math.max(rawWest, rawEast);
+          } else {
+            const fallback = getBoundsFromCenterAndRadius(lat, lng, selectedRadius);
+            south = fallback.south;
+            west = fallback.west;
+            north = fallback.north;
+            east = fallback.east;
+          }
+
+          if (
+            !Number.isFinite(south) ||
+            !Number.isFinite(north) ||
+            !Number.isFinite(west) ||
+            !Number.isFinite(east) ||
+            north - south < 0.0001 ||
+            east - west < 0.0001 ||
+            north - south > 25 ||
+            east - west > 45
+          ) {
+            const fallback = getBoundsFromCenterAndRadius(lat, lng, selectedRadius);
+            south = fallback.south;
+            west = fallback.west;
+            north = fallback.north;
+            east = fallback.east;
+          }
+        } catch {
+          const fallback = getBoundsFromCenterAndRadius(lat, lng, selectedRadius);
+          south = fallback.south;
+          west = fallback.west;
+          north = fallback.north;
+          east = fallback.east;
+        }
       } else {
-        const bounds = getBoundsFromCenterAndRadius(lat, lng, selectedRadius);
-        url = `/api/stores/bounds?south=${bounds.south}&west=${bounds.west}&north=${bounds.north}&east=${bounds.east}`;
+        const fallback = getBoundsFromCenterAndRadius(lat, lng, selectedRadius);
+        south = fallback.south;
+        west = fallback.west;
+        north = fallback.north;
+        east = fallback.east;
       }
 
+      south = Math.max(-85, Math.min(85, south));
+      north = Math.max(-85, Math.min(85, north));
+      west = Math.max(-180, Math.min(180, west));
+      east = Math.max(-180, Math.min(180, east));
+      if (south >= north) north = south + 0.01;
+      if (west >= east) east = west + 0.01;
+
+      const url = `/api/stores/bounds?south=${encodeURIComponent(south.toFixed(6))}&west=${encodeURIComponent(west.toFixed(6))}&north=${encodeURIComponent(north.toFixed(6))}&east=${encodeURIComponent(east.toFixed(6))}`;
+
       const response = await fetch(url, { signal: controller.signal });
-      if (!response.ok) throw new Error(`Bounds API ${response.status}`);
+      if (!response.ok) {
+        console.warn(`Bounds API responded with ${response.status}`);
+        return;
+      }
       const data = await response.json();
       const stores = (data.stores || []).map((store: any) => {
         const dist = haversineDistance(lat, lng, store.latitude, store.longitude);
@@ -151,37 +219,33 @@ export function MapHome() {
   );
 
   useEffect(() => {
-    const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
-    if (!clientId) {
-      const timer = setTimeout(() => setMapError("네이버 지도 Client ID가 설정되지 않았습니다. (.env.local 확인)"), 0);
-      return () => clearTimeout(timer);
-    }
-    if (window.naver?.maps) {
-      const timer = setTimeout(() => setIsMapLoaded(true), 0);
-      return () => clearTimeout(timer);
-    }
-    const scriptId = "naver-map-script";
-    const existing = document.getElementById(scriptId) as HTMLScriptElement | null;
-    const onLoad = () => (window.naver?.maps ? setIsMapLoaded(true) : setMapError("네이버 지도 API 로드에 실패했습니다."));
-    const onError = () => setMapError("네이버 지도 스크립트를 불러오는데 실패했습니다.");
-    if (existing) {
-      existing.addEventListener("load", onLoad, { once: true });
-      existing.addEventListener("error", onError, { once: true });
-      return () => {
-        existing.removeEventListener("load", onLoad);
-        existing.removeEventListener("error", onError);
-      };
-    }
-    const script = document.createElement("script");
-    script.id = scriptId;
-    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}`;
-    script.async = true;
-    script.addEventListener("load", onLoad, { once: true });
-    script.addEventListener("error", onError, { once: true });
-    document.head.appendChild(script);
+    const checkMap = () => {
+      if (typeof window !== "undefined" && window.naver?.maps) {
+        setIsMapLoaded(true);
+        setMapError(null);
+        return true;
+      }
+      return false;
+    };
+
+    if (checkMap()) return;
+
+    const interval = setInterval(() => {
+      if (checkMap()) {
+        clearInterval(interval);
+      }
+    }, 100);
+
+    const timer = setTimeout(() => {
+      clearInterval(interval);
+      if (!window.naver?.maps) {
+        setMapError("네이버 지도 API를 불러오지 못했습니다. 새로고침을 시도해 주세요.");
+      }
+    }, 10000);
+
     return () => {
-      script.removeEventListener("load", onLoad);
-      script.removeEventListener("error", onError);
+      clearInterval(interval);
+      clearTimeout(timer);
     };
   }, []);
 
@@ -259,9 +323,10 @@ export function MapHome() {
 
   useEffect(() => {
     if (!isMapLoaded || !mapElementRef.current || !window.naver?.maps || mapInstanceRef.current) return;
+    mapElementRef.current.innerHTML = "";
     const map = new window.naver.maps.Map(mapElementRef.current, {
       center: new window.naver.maps.LatLng(centerLocationRef.current.lat, centerLocationRef.current.lng),
-      zoom: 14,
+      zoom: RADIUS_OPTIONS.find((option) => option.value === radiusRef.current)?.zoom ?? 14,
       scaleControl: false,
       logoControl: true,
       mapDataControl: false,
@@ -269,6 +334,27 @@ export function MapHome() {
       zoomControlOptions: { position: window.naver.maps.Position.RIGHT_CENTER },
     });
     mapInstanceRef.current = map;
+
+    const syncMapSize = () => {
+      if (mapInstanceRef.current && window.naver?.maps) {
+        window.naver.maps.Event.trigger(mapInstanceRef.current, "resize");
+        mapInstanceRef.current.setCenter(
+          new window.naver.maps.LatLng(centerLocationRef.current.lat, centerLocationRef.current.lng)
+        );
+      }
+    };
+
+    syncMapSize();
+    const rafId = requestAnimationFrame(syncMapSize);
+    const timer1 = setTimeout(syncMapSize, 100);
+    const timer2 = setTimeout(syncMapSize, 400);
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined" && mapElementRef.current) {
+      resizeObserver = new ResizeObserver(() => syncMapSize());
+      resizeObserver.observe(mapElementRef.current);
+    }
+
     mapIdleListenerRef.current = window.naver.maps.Event.addListener(map, "idle", () => scheduleViewportRefresh(map));
     mapDragListenerRef.current = window.naver.maps.Event.addListener(map, "dragstart", () => {
       if (programmaticMoveRef.current) return;
@@ -282,6 +368,10 @@ export function MapHome() {
     scheduleViewportRefresh(map);
 
     return () => {
+      cancelAnimationFrame(rafId);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      resizeObserver?.disconnect();
       if (mapIdleListenerRef.current) window.naver.maps.Event.removeListener(mapIdleListenerRef.current);
       if (mapDragListenerRef.current) window.naver.maps.Event.removeListener(mapDragListenerRef.current);
       if (mapClickListenerRef.current) window.naver.maps.Event.removeListener(mapClickListenerRef.current);
@@ -289,9 +379,27 @@ export function MapHome() {
       if (programmaticMoveTimerRef.current) clearTimeout(programmaticMoveTimerRef.current);
       nearbyAbortRef.current?.abort();
       infoWindowRef.current?.close();
+      try {
+        if (mapInstanceRef.current && typeof mapInstanceRef.current.destroy === "function") {
+          mapInstanceRef.current.destroy();
+        }
+      } catch {}
       mapInstanceRef.current = null;
     };
   }, [isMapLoaded, scheduleViewportRefresh]);
+
+  const toggleWinRank = (rank: number) => {
+    setSelectedWinRanks((prev) =>
+      prev.includes(rank) ? prev.filter((r) => r !== rank) : [...prev, rank]
+    );
+  };
+
+  const filteredStores = useMemo(() => {
+    if (selectedWinRanks.length === 0) return nearbyStores;
+    return nearbyStores.filter((store) =>
+      selectedWinRanks.some((rank) => (store.rankCounts?.[rank as 1 | 2 | 3 | 4 | 5] ?? 0) > 0)
+    );
+  }, [nearbyStores, selectedWinRanks]);
 
   useEffect(() => {
     if (!isMapLoaded || !mapInstanceRef.current || !window.naver?.maps) return;
@@ -301,14 +409,14 @@ export function MapHome() {
     markersRef.current = [];
 
     const map = mapInstanceRef.current;
-    // 지도 마커는 반경 목록과 동일한 nearbyStores 데이터로 렌더링 → 마커 수 == "반경 내 판매점" 수.
-    const podiumRanks = getPodiumRanks(nearbyStores);
+    // 지도 마커는 필터링된 filteredStores 데이터로 렌더링 → 마커 수 == "반경 내 판매점" 수.
+    const podiumRanks = getPodiumRanks(filteredStores);
     const podiumIds = new Set(Object.keys(podiumRanks));
     const zoom = map.getZoom();
     const cellSize = clusterCellSize(zoom);
     const groups = new Map<string, NearbyStoreRecord[]>();
 
-    for (const store of nearbyStores) {
+    for (const store of filteredStores) {
       if (podiumIds.has(store.id) || cellSize === 0) {
         groups.set(`store:${store.id}`, [store]);
         continue;
@@ -409,9 +517,9 @@ export function MapHome() {
       });
       markersRef.current.push(marker);
     }
-  }, [isMapLoaded, nearbyStores]);
+  }, [isMapLoaded, filteredStores]);
 
-  const sortedStores = useMemo(() => sortNearbyStores(nearbyStores, sortMode), [nearbyStores, sortMode]);
+  const sortedStores = useMemo(() => sortNearbyStores(filteredStores, sortMode), [filteredStores, sortMode]);
 
   const handleAddressSearch = (event: React.FormEvent) => {
     event.preventDefault();
@@ -458,7 +566,7 @@ export function MapHome() {
 
   return (
     <main className="relative min-h-dvh overflow-x-hidden pb-20">
-      <section aria-label="판매점 지도" className="map-grid relative h-[62dvh] min-h-[470px] overflow-hidden border-b border-[#D6DED7]">
+      <section aria-label="판매점 지도" className="map-grid relative h-[65dvh] min-h-[500px] overflow-hidden border-b border-[#D6DED7]">
         <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between p-4 sm:p-6">
           <div className="flex min-h-12 items-center gap-2 rounded-2xl border border-[#DDE4DE] bg-white px-3.5 shadow-sm">
             <span className="flex size-8 items-center justify-center rounded-lg bg-[#0F8A5F] text-white"><Ticket aria-hidden="true" size={18} /></span>
@@ -467,16 +575,70 @@ export function MapHome() {
           <button type="button" onClick={requestLocation} className="pressable flex size-12 items-center justify-center rounded-full border border-[#DDE4DE] bg-white text-[#0F8A5F] shadow-sm" aria-label="현재 위치로 이동"><LocateFixed aria-hidden="true" size={24} /></button>
         </div>
 
-        <div className="absolute left-4 right-4 top-20 z-20 flex items-center gap-2 overflow-x-auto pb-1 sm:left-6 sm:right-6">
-          <div className="flex shrink-0 items-center rounded-full border border-[#D7DED8] bg-white p-1 shadow-sm">
+        {/* Row 1: Radius Selector */}
+        <div className="absolute left-4 right-4 top-[70px] z-20 flex items-center gap-2 overflow-x-auto pb-1 sm:left-6 sm:right-6">
+          <div className="flex shrink-0 items-center rounded-full border border-[#D7DED8] bg-white/95 p-1 shadow-sm backdrop-blur-sm">
             {RADIUS_OPTIONS.map((option) => (
-              <button key={option.value} type="button" onClick={() => handleRadiusChange(option)} className={`min-h-12 shrink-0 rounded-full px-[9px] text-[13px] font-extrabold transition-colors ${radius === option.value ? "bg-[#0F8A5F] text-white" : "text-[#556159]"}`}>{option.label}</button>
+              <button key={option.value} type="button" onClick={() => handleRadiusChange(option)} className={`min-h-10 shrink-0 rounded-full px-3 text-[13px] font-extrabold transition-colors ${radius === option.value ? "bg-[#0F8A5F] text-white shadow-sm" : "text-[#556159] hover:text-[#17211C]"}`}>{option.label}</button>
             ))}
           </div>
         </div>
 
+        {/* Row 2: Win Rank Multi-Select Filter */}
+        <div className="absolute left-4 right-4 top-[124px] z-20 flex items-center gap-1.5 overflow-x-auto pb-1 sm:left-6 sm:right-6">
+          <div className="flex shrink-0 items-center gap-1 rounded-full border border-[#D7DED8] bg-white/95 p-1 shadow-sm backdrop-blur-sm">
+            <button
+              type="button"
+              onClick={() => setSelectedWinRanks([])}
+              className={`min-h-8 shrink-0 rounded-full px-3 text-[12px] font-extrabold transition-colors ${
+                selectedWinRanks.length === 0
+                  ? "bg-[#17211C] text-white shadow-sm"
+                  : "text-[#68736D] hover:text-[#17211C]"
+              }`}
+            >
+              전체
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleWinRank(1)}
+              className={`flex min-h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[12px] font-extrabold transition-all ${
+                selectedWinRanks.includes(1)
+                  ? "border border-[#F59E0B] bg-[#FEF3C7] font-black text-[#92400E] shadow-sm"
+                  : "text-[#556159] hover:text-[#17211C]"
+              }`}
+            >
+              <span className="inline-block size-2 rounded-full bg-[#D4AF37]" />
+              1등 배출
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleWinRank(2)}
+              className={`flex min-h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[12px] font-extrabold transition-all ${
+                selectedWinRanks.includes(2)
+                  ? "border border-[#94A3B8] bg-[#F1F5F9] font-black text-[#1E293B] shadow-sm"
+                  : "text-[#556159] hover:text-[#17211C]"
+              }`}
+            >
+              <span className="inline-block size-2 rounded-full bg-[#A8AFB7]" />
+              2등 배출
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleWinRank(3)}
+              className={`flex min-h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-[12px] font-extrabold transition-all ${
+                selectedWinRanks.includes(3)
+                  ? "border border-[#F97316] bg-[#FFEDD5] font-black text-[#9A3412] shadow-sm"
+                  : "text-[#556159] hover:text-[#17211C]"
+              }`}
+            >
+              <span className="inline-block size-2 rounded-full bg-[#CD7F32]" />
+              3등 배출
+            </button>
+          </div>
+        </div>
+
         {locationStatus === "denied" && (
-          <div className="absolute left-4 right-4 top-36 z-20 sm:left-6 sm:right-6">
+          <div className="absolute left-4 right-4 top-[176px] z-20 sm:left-6 sm:right-6">
             {locationMessage && <p className="mb-2 rounded-xl bg-white/95 px-3 py-2 text-[13px] font-bold leading-5 text-[#B23B3B] shadow-sm">{locationMessage}</p>}
             <form onSubmit={handleAddressSearch} className="flex min-h-12 items-center rounded-xl border border-[#DDE4DE] bg-white px-3 shadow-md">
               <Search size={18} className="mr-2 shrink-0 text-[#68736D]" />
@@ -486,9 +648,15 @@ export function MapHome() {
           </div>
         )}
 
-        <div ref={mapElementRef} className="h-full w-full bg-[#E5E9E6]">
+        {/* Map Container */}
+        <div className="relative h-full min-h-[500px] w-full bg-[#E5E9E6]">
+          <div
+            ref={mapElementRef}
+            className="h-full min-h-[500px] w-full"
+            style={{ width: "100%", height: "100%", minHeight: "500px" }}
+          />
           {(!isMapLoaded || mapError) && (
-            <div className="flex h-full flex-col items-center justify-center bg-[#F2F5F3] p-6 text-center">
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#F2F5F3] p-6 text-center">
               <AlertCircle size={36} className="mb-2 text-[#E54B4B]" />
               <p className="text-[16px] font-extrabold text-[#17211C]">{mapError || "네이버 지도를 불러오는 중입니다..."}</p>
               <p className="mt-1 text-[13px] font-medium text-[#68736D]">지도가 렌더링되지 않더라도 아래 목록에서 반경 내 판매점을 확인할 수 있습니다.</p>
@@ -497,23 +665,23 @@ export function MapHome() {
         </div>
 
         {locationStatus === "locating" && isMapLoaded && !mapError && (
-          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#F2F5F3]/70">
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#F2F5F3]/40">
             <div className="rounded-full border border-[#C9D4CC] bg-white px-4 py-2 text-[13px] font-extrabold text-[#0F8A5F] shadow-sm">현재 위치를 확인하는 중입니다...</div>
           </div>
         )}
-
-        <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-[#C9D4CC] bg-white/95 px-3 py-2 text-[11px] font-extrabold text-[#4F5B54] shadow-sm">
-          <span>반경 내 {nearbyStores.length}곳</span><span aria-hidden="true">·</span>
-          <span className="text-[#967814]">● 1위</span><span className="text-[#7A8087]">● 2위</span><span className="text-[#9A5427]">● 3위</span>
-        </div>
       </section>
 
       <section aria-labelledby="nearby-title" className="relative z-30 -mt-7 rounded-t-[28px] border-t border-[#D8DFD9] bg-[#F7F8F5] px-4 pt-3 sm:px-6">
         <div aria-hidden="true" className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-[#C2CAC4]" />
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-[14px] font-extrabold text-[#0F8A5F]">{locationStatus === "granted" ? "현재 위치 기준" : locationStatus === "locating" ? "현재 위치 확인 중" : "선택한 중심 위치 기준"} ({radiusLabel(radius)} 반경)</p>
-            <h1 id="nearby-title" className="mt-0.5 text-[24px] font-black tracking-[-0.04em]">반경 내 판매점 {nearbyStores.length}곳</h1>
+            <p className="text-[14px] font-extrabold text-[#0F8A5F]">
+              {locationStatus === "granted" ? "현재 위치 기준" : locationStatus === "locating" ? "현재 위치 확인 중" : "선택한 중심 위치 기준"} ({radiusLabel(radius)} 반경)
+              {selectedWinRanks.length > 0 && ` · ${selectedWinRanks.sort().map((r) => `${r}등`).join("·")} 배출 필터`}
+            </p>
+            <h1 id="nearby-title" className="mt-0.5 text-[24px] font-black tracking-[-0.04em]">
+              반경 내 판매점 {filteredStores.length}곳
+            </h1>
           </div>
           <div className="flex w-fit rounded-xl border border-[#D8DED9] bg-white p-1" aria-label="판매점 정렬 방식">
             <button type="button" onClick={() => setSortMode("distance")} className={`min-h-12 rounded-lg px-3 text-[13px] font-extrabold ${sortMode === "distance" ? "bg-[#17211C] text-white" : "text-[#556159]"}`}>거리순</button>
@@ -526,7 +694,11 @@ export function MapHome() {
         ) : loading ? (
           <div className="py-12 text-center font-bold text-[#68736D]">판매점 데이터를 불러오는 중...</div>
         ) : sortedStores.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-[#D8DED9] bg-white p-6 py-12 text-center font-bold text-[#68736D]">선택한 반경 내 판매점이 없습니다. 반경을 넓히거나 다른 위치를 선택해 주세요.</div>
+          <div className="rounded-2xl border border-dashed border-[#D8DED9] bg-white p-6 py-12 text-center font-bold text-[#68736D]">
+            {selectedWinRanks.length > 0
+              ? `선택한 당첨 등수(${selectedWinRanks.sort().map((r) => `${r}등`).join(", ")})를 배출한 판매점이 반경 내에 없습니다.`
+              : "선택한 반경 내 판매점이 없습니다. 반경을 넓히거나 다른 위치를 선택해 주세요."}
+          </div>
         ) : (
           <div className="space-y-3">
             {sortedStores.map((store) => <div key={store.id} className="[content-visibility:auto] [contain-intrinsic-size:150px]"><StoreCard store={store} /></div>)}

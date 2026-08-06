@@ -15,18 +15,18 @@ test('map idle refreshes the radius list from map center, which feeds both marke
   assert.match(source, /fetchNearbyStores\([\s\S]*?\.lat\(\)[\s\S]*?\.lng\(\)[\s\S]*?radiusRef\.current/);
 });
 
-test('map markers render from the same radius data as the nearby list, so the two counters always agree', () => {
-  assert.match(source, /getPodiumRanks\(nearbyStores\)/);
-  assert.match(source, /for \(const store of nearbyStores\)/);
-  assert.match(source, /\[isMapLoaded, nearbyStores\]/);
+test('map markers render from the same filtered data as the nearby list, so the two counters always agree', () => {
+  assert.match(source, /getPodiumRanks\(filteredStores\)/);
+  assert.match(source, /for \(const store of filteredStores\)/);
+  assert.match(source, /\[isMapLoaded, filteredStores\]/);
   // Both markers and lists must use the bounds API to display all stores in the viewport.
   assert.match(source, /\/api\/stores\/bounds/);
   assert.doesNotMatch(source, /fetchVisibleMapStores/);
   assert.doesNotMatch(source, /mapStores/);
 });
 
-test('the in-map badge shows the same radius count as the nearby list heading (no viewport count)', () => {
-  assert.match(source, /반경 내 \{nearbyStores\.length\}곳/);
+test('the nearby list heading shows the radius count', () => {
+  assert.match(source, /반경 내 판매점 \{filteredStores\.length\}곳/);
 });
 
 test('past wins are the default list sorting mode', () => {

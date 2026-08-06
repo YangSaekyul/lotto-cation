@@ -37,7 +37,7 @@ export function validateBoundsQuery(
   if (south < -90 || north > 90 || west < -180 || east > 180 || south >= north || west >= east) {
     return { ok: false, message: "지도 범위가 올바르지 않습니다." };
   }
-  if (north - south > 15 || east - west > 30) {
+  if (north - south > 30 || east - west > 50) {
     return { ok: false, message: "한 번에 조회할 수 있는 지도 범위를 초과했습니다." };
   }
   return { ok: true, data: { south, west, north, east } };

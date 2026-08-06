@@ -53,15 +53,10 @@ export default function StoreRankingPage() {
   // When the selected city changes, reset the district selector and
   // repopulate its options from the districts API.
   useEffect(() => {
-    let cancelled = false;
-    setSelectedDistrict("전체");
+    // Skip if city is "전체" - district dropdown is hidden anyway
+    if (selectedCity === "전체") return;
 
-    if (selectedCity === "전체") {
-      setDistrictOptions([]);
-      setDistrictsError(null);
-      setDistrictsLoading(false);
-      return;
-    }
+    let cancelled = false;
 
     setDistrictsLoading(true);
     setDistrictsError(null);
@@ -165,7 +160,10 @@ export default function StoreRankingPage() {
           <span className="mb-1 block text-[13px] font-bold text-[#68736D]">시 / 도</span>
           <select
             value={selectedCity}
-            onChange={(e) => setSelectedCity(e.target.value)}
+            onChange={(e) => {
+              setSelectedCity(e.target.value);
+              setSelectedDistrict("전체"); // Reset district when city changes
+            }}
             className="min-h-14 w-full appearance-none rounded-2xl border border-[#D5DDD6] bg-white px-4 pr-12 text-[16px] font-extrabold text-[#17211C]"
           >
             {CITY_OPTIONS.map((city) => (

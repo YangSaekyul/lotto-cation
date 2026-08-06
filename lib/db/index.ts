@@ -55,6 +55,11 @@ export type NumberFrequency = {
   level: "low" | "mid" | "high";
 };
 
+export type PeriodTopNumbers = {
+  periodMonths: number;
+  numbers: number[];
+};
+
 
 type NormalizedDbSchema = {
   meta: {
@@ -116,27 +121,72 @@ function loadDb(): NormalizedDbSchema {
   };
 }
 
-export function extractRegion(address: string): string {
-  if (!address) return "기타";
+// Ordered list of [region name, address prefixes] used to parse addresses.
+// Longer / more specific prefixes come first so that e.g. "제주특별자치도"
+// still matches before an overly broad prefix like "제주".
+const REGION_PREFIXES: Array<[string, string[]]> = [
+  ["서울", ["서울"]],
+  ["경기", ["경기", "경기도"]],
+  ["부산", ["부산"]],
+  ["대구", ["대구"]],
+  ["인천", ["인천"]],
+  ["광주", ["광주"]],
+  ["대전", ["대전"]],
+  ["울산", ["울산"]],
+  ["세종", ["세종"]],
+  ["강원", ["강원", "강원도"]],
+  ["충북", ["충북", "충청북도"]],
+  ["충남", ["충남", "충청남도"]],
+  ["전북", ["전북", "전라북도"]],
+  ["전남", ["전남", "전라남도"]],
+  ["경북", ["경북", "경상북도"]],
+  ["경남", ["경남", "경상남도"]],
+  ["제주", ["제주", "제주특별자치도"]],
+];
+
+function matchRegion(address: string): { region: string; prefix: string } | null {
+  if (!address) return null;
   const trimmed = address.trim();
-  if (trimmed.startsWith("서울")) return "서울";
-  if (trimmed.startsWith("경기")) return "경기";
-  if (trimmed.startsWith("부산")) return "부산";
-  if (trimmed.startsWith("대구")) return "대구";
-  if (trimmed.startsWith("인천")) return "인천";
-  if (trimmed.startsWith("광주")) return "광주";
-  if (trimmed.startsWith("대전")) return "대전";
-  if (trimmed.startsWith("울산")) return "울산";
-  if (trimmed.startsWith("세종")) return "세종";
-  if (trimmed.startsWith("강원")) return "강원";
-  if (trimmed.startsWith("충북") || trimmed.startsWith("충청북도")) return "충북";
-  if (trimmed.startsWith("충남") || trimmed.startsWith("충청남도")) return "충남";
-  if (trimmed.startsWith("전북") || trimmed.startsWith("전라북도")) return "전북";
-  if (trimmed.startsWith("전남") || trimmed.startsWith("전라남도")) return "전남";
-  if (trimmed.startsWith("경북") || trimmed.startsWith("경상북도")) return "경북";
-  if (trimmed.startsWith("경남") || trimmed.startsWith("경상남도")) return "경남";
-  if (trimmed.startsWith("제주")) return "제주";
-  return "기타";
+  for (const [region, prefixes] of REGION_PREFIXES) {
+    for (const prefix of prefixes) {
+      if (trimmed.startsWith(prefix)) return { region, prefix };
+    }
+  }
+  return null;
+}
+
+export function extractRegion(address: string): string {
+  return matchRegion(address)?.region ?? "기타";
+}
+
+/**
+ * Extract the second-level administrative segment (구 / 시 / 군 / 읍 / 면)
+ * from a store address, e.g. "서울 강남구 ..." -> "강남구",
+ * "경기 수원시 ..." -> "수원시".
+ * Returns "" when no region prefix or no second token is found.
+ */
+export function extractDistrict(address: string): string {
+  const match = matchRegion(address);
+  if (!match) return "";
+  const rest = (address || "").trim().slice(match.prefix.length).trim();
+  const firstToken = rest.split(/\s+/)[0] ?? "";
+  return firstToken;
+}
+
+/**
+ * Return the sorted list of valid districts for a selected region (city/province).
+ * Pass "전체" (default) to list districts across the whole country.
+ */
+export function getDistricts(regionFilter: string = "전체"): string[] {
+  const db = loadDb();
+  const set = new Set<string>();
+  for (const store of db.stores) {
+    if (store.is_online) continue;
+    if (regionFilter !== "전체" && extractRegion(store.address) !== regionFilter) continue;
+    const district = extractDistrict(store.address);
+    if (district) set.add(district);
+  }
+  return [...set].sort((a, b) => a.localeCompare(b, "ko"));
 }
 
 export function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -279,13 +329,19 @@ export function getStoreById(id: string): StoreRecord | null {
 export function getTopStores(
   rankFilter: "all" | WinRank = "all",
   regionFilter: string = "전체",
-  limit: number = 50
+  limit: number = 50,
+  districtFilter: string = ""
 ): StoreRecord[] {
   const db = loadDb();
   let stores = db.stores.filter((s) => !s.is_online);
 
   if (regionFilter !== "전체") {
     stores = stores.filter((s) => extractRegion(s.address) === regionFilter);
+  }
+
+  // Optional district (구/읍/면/시/군) filter — skip when empty or "전체".
+  if (districtFilter && districtFilter !== "전체") {
+    stores = stores.filter((s) => extractDistrict(s.address) === districtFilter);
   }
 
   if (rankFilter !== "all") {
@@ -340,10 +396,13 @@ export function getLatestDraw(): DrawResult {
   };
 }
 
-export function getNumberStatistics(months: number = 6): NumberFrequency[] {
-  const db = loadDb();
-  const latestRawDate = db.draws[0]?.draw_date;
-  if (!latestRawDate || !/^\d{8}$/.test(latestRawDate)) return [];
+/**
+ * 최신 회차 날짜를 기준으로 months개월 전 시작점(calendar cutoff)의 YYYYMMDD 키를
+ * 계산한다. getNumberStatistics와 getTopNumbersByPeriod가 동일한 구간 규칙을 쓰도록
+ * 공유하는 헬퍼다. 데이터가 유효하지 않으면 null을 돌려준다.
+ */
+function computeCutoffKey(latestRawDate: string | undefined, months: number): string | null {
+  if (!latestRawDate || !/^\d{8}$/.test(latestRawDate)) return null;
 
   const year = Number(latestRawDate.slice(0, 4));
   const monthIndex = Number(latestRawDate.slice(4, 6)) - 1;
@@ -352,14 +411,41 @@ export function getNumberStatistics(months: number = 6): NumberFrequency[] {
   cutoff.setUTCMonth(cutoff.getUTCMonth() - Math.max(1, months));
   const lastDayOfCutoffMonth = new Date(Date.UTC(cutoff.getUTCFullYear(), cutoff.getUTCMonth() + 1, 0)).getUTCDate();
   cutoff.setUTCDate(Math.min(day, lastDayOfCutoffMonth));
-  const cutoffKey = cutoff.toISOString().slice(0, 10).replaceAll("-", "");
+  return cutoff.toISOString().slice(0, 10).replaceAll("-", "");
+}
+
+/**
+ * months개월 구간에 포함된 회차의 번호별 출현 횟수를 센다. 출현한 번호(1~45)만 키로
+ * 갖는 Record를 돌려주며, 데이터가 없으면 빈 객체를 돌려준다.
+ */
+function countNumbersInPeriod(months: number): Record<number, number> {
+  const db = loadDb();
+  const cutoffKey = computeCutoffKey(db.draws[0]?.draw_date, months);
+  const freqMap: Record<number, number> = {};
+  if (!cutoffKey) return freqMap;
+
   const selectedDraws = db.draws.filter((draw) => /^\d{8}$/.test(draw.draw_date) && draw.draw_date >= cutoffKey);
+  for (const draw of selectedDraws) {
+    for (const num of draw.numbers) {
+      if (num >= 1 && num <= 45) {
+        freqMap[num] = (freqMap[num] || 0) + 1;
+      }
+    }
+  }
+  return freqMap;
+}
+
+export function getNumberStatistics(months: number = 6): NumberFrequency[] {
+  const db = loadDb();
+  const cutoffKey = computeCutoffKey(db.draws[0]?.draw_date, months);
+  if (!cutoffKey) return [];
 
   const freqMap: Record<number, number> = {};
   for (let i = 1; i <= 45; i++) {
     freqMap[i] = 0;
   }
 
+  const selectedDraws = db.draws.filter((draw) => /^\d{8}$/.test(draw.draw_date) && draw.draw_date >= cutoffKey);
   for (const draw of selectedDraws) {
     for (const num of draw.numbers) {
       if (num >= 1 && num <= 45) {
@@ -386,6 +472,30 @@ export function getNumberStatistics(months: number = 6): NumberFrequency[] {
   }
 
   return result;
+}
+
+/**
+ * 개월수 구간별 상위 N개 번호 집계. 기준 시점(최신 완료 회차)에서 각 구간에 포함된
+ * 회차의 번호만 대상으로 출현 횟수를 센 뒤, 횟수 내림차순(동률이면 번호 오름차순)으로
+ * 정렬해 최대 limit개(기본 6)를 돌려준다. 구간 데이터가 부족해도 실제 출현한 번호만
+ * 정렬하여 반환하므로, 구간 길이가 매우 짧아 회차가 적으면 6개 미만일 수 있다.
+ *
+ * 반환 예: [{ periodMonths: 1, numbers: [45, 23, 12, 7, 34, 1] }, ...]
+ */
+export function getTopNumbersByPeriod(
+  periodsMonths: number[] = [1, 3, 6, 12],
+  limit: number = 6,
+): PeriodTopNumbers[] {
+  const topLimit = Number.isFinite(limit) ? Math.max(1, Math.floor(limit)) : 6;
+  return periodsMonths.map((months) => {
+    const freqMap = countNumbersInPeriod(months);
+    const numbers = Object.keys(freqMap)
+      .map(Number)
+      .filter((num) => freqMap[num] > 0)
+      .sort((a, b) => freqMap[b] - freqMap[a] || a - b)
+      .slice(0, topLimit);
+    return { periodMonths: months, numbers };
+  });
 }
 
 

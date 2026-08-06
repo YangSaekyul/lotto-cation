@@ -1,4 +1,4 @@
-export type PodiumRank = 1 | 2 | 3;
+export type PodiumRank = 1 | 2 | 3 | 4 | 5;
 export type NearbySort = 'distance' | 'wins';
 
 export function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -66,8 +66,8 @@ function comparePastWins<T extends RankedStore>(a: T, b: T): number {
 }
 
 export function getPodiumRanks<T extends RankedStore>(stores: readonly T[]): Record<string, PodiumRank> {
-  const topThree = [...stores].sort(comparePastWins).slice(0, 3);
-  return Object.fromEntries(topThree.map((store, index) => [store.id, (index + 1) as PodiumRank]));
+  const topFive = [...stores].sort(comparePastWins).slice(0, 5);
+  return Object.fromEntries(topFive.map((store, index) => [store.id, (index + 1) as PodiumRank]));
 }
 
 export function sortNearbyStores<T extends RankedStore>(stores: readonly T[], sort: NearbySort): T[] {

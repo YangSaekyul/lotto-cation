@@ -1,11 +1,32 @@
 {
   "source": "https://www.dhlottery.co.kr",
-  "refreshed_at": "2026-08-01T09:31:33.015578+00:00",
+  "refreshed_at": "2026-08-03T20:01:52.732333+00:00",
   "draw_range": [
     1,
-    1234
+    1235
   ],
   "draws": [
+    {
+      "draw_no": 1235,
+      "draw_date": "20260801",
+      "numbers": [
+        6,
+        7,
+        11,
+        15,
+        39,
+        43
+      ],
+      "bonus_number": 20,
+      "winner_counts": {
+        "1": 9,
+        "2": 82,
+        "3": 2859,
+        "4": 154048,
+        "5": 2585719
+      },
+      "source_url": "https://www.dhlottery.co.kr/lt645/result?result=byWin&lottoId=LO40&drawNo=1235"
+    },
     {
       "draw_no": 1234,
       "draw_date": "20260725",

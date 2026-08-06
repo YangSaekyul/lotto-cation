@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { AppHeader } from "@/components/app-header";
 import { PageFooter, ProbabilityNotice } from "@/components/page-footer";
 import { RankBadge } from "@/components/rank-badge";
+import { StoreMiniMap } from "@/components/store-mini-map";
 import { getDrawDateMap, getStoreById, type WinRank } from "@/lib/db";
 
 type StorePageProps = { params: Promise<{ id: string }> };
@@ -81,16 +82,8 @@ export default async function StorePage({ params }: StorePageProps) {
           </dl>
         </section>
 
-        {/* NAVER MAP DIRECTIONS BUTTON */}
-        <a
-          href={directionsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="pressable mt-3 flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#0F8A5F] px-5 text-[17px] font-extrabold text-white shadow-sm"
-        >
-          <Navigation aria-hidden="true" size={21} />
-          네이버 지도 길찾기
-        </a>
+        {/* STORE MINI MAP */}
+        <StoreMiniMap store={store} />
 
         {/* RANK SUMMARY */}
         <section className="mt-6 rounded-2xl border border-[#DFE4DF] bg-white p-4">

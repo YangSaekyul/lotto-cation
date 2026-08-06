@@ -45,6 +45,10 @@ export function StoreCard({ store, rank, isSelected, onSelect }: StoreCardProps)
     }
   };
 
+  const mapUrl = store.latitude && store.longitude
+    ? `/?lat=${store.latitude}&lng=${store.longitude}&storeId=${encodeURIComponent(store.id)}`
+    : "/";
+
   return (
     <div
       onClick={handleCardClick}
@@ -120,16 +124,29 @@ export function StoreCard({ store, rank, isSelected, onSelect }: StoreCardProps)
           ))}
         </Link>
 
-        <a
-          href={directionsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="pressable inline-flex min-h-10 items-center gap-1 rounded-xl bg-[#0F8A5F] px-3 py-1.5 text-[12px] font-extrabold text-white shadow-xs"
-        >
-          <Navigation size={13} />
-          길찾기
-        </a>
+        <div className="flex items-center gap-1.5">
+          {store.latitude && store.longitude && (
+            <Link
+              href={mapUrl}
+              onClick={(e) => e.stopPropagation()}
+              className="pressable inline-flex min-h-10 items-center gap-1 rounded-xl border border-[#D7DED8] bg-white px-2.5 py-1.5 text-[12px] font-extrabold text-[#17211C] shadow-xs hover:bg-[#F4F6F4]"
+            >
+              <MapPin size={13} className="text-[#0F8A5F]" />
+              지도 위치
+            </Link>
+          )}
+
+          <a
+            href={directionsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="pressable inline-flex min-h-10 items-center gap-1 rounded-xl bg-[#0F8A5F] px-3 py-1.5 text-[12px] font-extrabold text-white shadow-xs"
+          >
+            <Navigation size={13} />
+            길찾기
+          </a>
+        </div>
       </div>
     </div>
   );

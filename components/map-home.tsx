@@ -2,6 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { AlertCircle, LocateFixed, Search, Ticket } from "lucide-react";
 import { PageFooter } from "@/components/page-footer";
 import { StoreCard } from "@/components/store-card";
@@ -305,7 +306,39 @@ function getRadiusFromZoom(zoom: number): number {
     );
   }, [applyUserLocation]);
 
+  const searchParams = useSearchParams();
+  const paramLat = searchParams?.get("lat");
+  const paramLng = searchParams?.get("lng");
+  const paramStoreId = searchParams?.get("storeId");
+
   useEffect(() => {
+    if (!paramLat || !paramLng) return;
+    const lat = parseFloat(paramLat);
+    const lng = parseFloat(paramLng);
+    if (isNaN(lat) || isNaN(lng)) return;
+
+    const coords = { lat, lng };
+    centerLocationRef.current = coords;
+    setCenterLocation(coords);
+    setLocationStatus("map");
+    radiusRef.current = 0.3;
+    setRadius(0.3);
+    fetchNearbyStores(lat, lng, 0.3);
+
+    if (paramStoreId) {
+      setSelectedStoreId(paramStoreId);
+      activeStoreIdRef.current = paramStoreId;
+    }
+
+    if (mapInstanceRef.current && window.naver?.maps) {
+      markProgrammaticMove();
+      mapInstanceRef.current.setCenter(new window.naver.maps.LatLng(lat, lng));
+      mapInstanceRef.current.setZoom(17);
+    }
+  }, [paramLat, paramLng, paramStoreId, fetchNearbyStores, markProgrammaticMove]);
+
+  useEffect(() => {
+    if (paramLat && paramLng) return;
     if (!navigator.geolocation) {
       const timer = setTimeout(() => {
         setLocationStatus("denied");
@@ -334,7 +367,7 @@ function getRadiusFromZoom(zoom: number): number {
       },
       { timeout: 8000, enableHighAccuracy: true, maximumAge: 60_000 },
     );
-  }, [applyUserLocation, fetchNearbyStores]);
+  }, [applyUserLocation, fetchNearbyStores, paramLat, paramLng]);
 
   useEffect(() => {
     if (!isMapLoaded || !mapElementRef.current || !window.naver?.maps || mapInstanceRef.current) return;

@@ -108,3 +108,13 @@ textarea:focus-visible {
   }
 }
 
+/* Hide Naver Map Logo and Copyright Footer */
+img[src*="naver-logo"],
+img[src*="static.naver.net/maps"],
+a[href*="legal.html"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+

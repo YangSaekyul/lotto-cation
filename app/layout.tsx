@@ -55,13 +55,16 @@ const structuredData = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID || "arpp8pekds";
   return (
     <html lang="ko">
-      <body className="bg-[#EEF1ED] text-[#17211C] antialiased">
-        <Script
-          src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID || "arpp8pekds"}`}
-          strategy="beforeInteractive"
+      <head>
+        <script
+          src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}`}
+          async
         />
+      </head>
+      <body className="bg-[#EEF1ED] text-[#17211C] antialiased">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <div className="mx-auto min-h-dvh w-full max-w-3xl overflow-x-clip bg-[#F7F8F5] sm:border-x sm:border-[#DDE3DE] shadow-sm">
           {children}

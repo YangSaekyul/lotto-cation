@@ -378,7 +378,7 @@ function getRadiusFromZoom(zoom: number): number {
       minZoom: 9,
       maxZoom: 19,
       scaleControl: false,
-      logoControl: true,
+      logoControl: false,
       mapDataControl: false,
       zoomControl: true,
       zoomControlOptions: { position: window.naver.maps.Position.RIGHT_CENTER },
@@ -711,15 +711,15 @@ function getRadiusFromZoom(zoom: number): number {
           </button>
         </div>
 
-        {/* Row 1: Radius Selector Floating Bar (Left-aligned) */}
-        <div className="no-scrollbar absolute left-3.5 right-3.5 top-[64px] z-20 flex justify-start overflow-x-auto pb-1 pt-[max(0.25rem,env(safe-area-inset-top))] sm:left-6 sm:right-6">
-          <div className="flex shrink-0 items-center rounded-full border border-[#D7DED8] bg-white/95 p-1 shadow-md backdrop-blur-md">
+        {/* Row 1: Radius Selector Floating Bar (Top-Left Compact) */}
+        <div className="no-scrollbar absolute left-2.5 top-2.5 z-20 flex overflow-x-auto sm:left-4 sm:top-4">
+          <div className="flex shrink-0 items-center rounded-full border border-[#D7DED8] bg-white/95 p-0.5 shadow-md backdrop-blur-md">
             {RADIUS_OPTIONS.map((option) => (
               <button
                 key={option.value}
                 type="button"
                 onClick={() => handleRadiusChange(option)}
-                className={`min-h-9 shrink-0 rounded-full px-3 text-[13px] font-extrabold transition-all ${
+                className={`min-h-7 shrink-0 rounded-full px-2 text-[11px] font-extrabold transition-all ${
                   radius === option.value
                     ? "bg-[#0F8A5F] text-white shadow-xs"
                     : "text-[#556159] hover:text-[#17211C] active:bg-[#F2F5F3]"
@@ -733,7 +733,7 @@ function getRadiusFromZoom(zoom: number): number {
 
         {/* Location Denied Search Form */}
         {locationStatus === "denied" && (
-          <div className="absolute left-3.5 right-3.5 top-[116px] z-20 sm:left-6 sm:right-6">
+          <div className="absolute left-3.5 right-3.5 top-[44px] z-20 sm:left-6 sm:right-6">
             {locationMessage && (
               <p className="mb-2 rounded-xl bg-white/95 px-3 py-2 text-[12px] font-bold leading-5 text-[#B23B3B] shadow-sm backdrop-blur-md">
                 {locationMessage}

@@ -1,14 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
 import "./globals.css";
 import { BottomNav } from "@/components/bottom-nav";
 
-const SITE_URL = "https://lotto-ri.vercel.app";
+const SITE_URL = "https://lotto-ry.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: "로또리 | 내 주변 로또 판매점 지도", template: "%s | 로또리" },
-  description: "현재 위치와 지도 화면을 기준으로 로또 판매점을 찾고 과거 1~5등 당첨 이력을 확인하는 비공식 정보 서비스",
+  description: "내 주변 로또 판매점과 1~5등 당첨 이력을 지도에서 찾고, 최근 로또 당첨번호와 번호 통계를 확인하는 무료 정보 서비스입니다.",
   applicationName: "로또리",
   appleWebApp: {
     capable: true,
@@ -19,7 +18,6 @@ export const metadata: Metadata = {
     telephone: false,
   },
   keywords: ["로또 판매점", "로또 지도", "주변 로또 판매점", "로또 당첨 판매점", "로또리"],
-  alternates: { canonical: "/" },
   icons: { icon: "/icon.svg" },
   openGraph: {
     type: "website",
@@ -27,9 +25,19 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "로또리",
     title: "로또리 | 내 주변 로또 판매점 지도",
-    description: "현재 위치와 지도 화면을 기준으로 판매점과 과거 당첨 이력을 확인하세요.",
+    description: "내 주변 로또 판매점, 1~5등 당첨 이력, 최근 당첨번호와 번호 통계를 한곳에서 확인하세요.",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "로또리 로또 판매점 지도" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "로또리 | 내 주변 로또 판매점 지도",
+    description: "내 주변 로또 판매점과 당첨 이력을 지도에서 확인하세요.",
+    images: ["/opengraph-image"],
   },
   robots: { index: true, follow: true },
+  verification: {
+    google: "GzSKhOZfpEpV6oFZs-bJzSoU_hd3spCzLTlRisA7wyo",
+  },
 };
 
 export const viewport: Viewport = {
@@ -43,15 +51,26 @@ export const viewport: Viewport = {
 
 const structuredData = {
   "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: "로또리",
-  alternateName: "LottoRi",
-  url: SITE_URL,
-  applicationCategory: "MapApplication",
-  operatingSystem: "Web",
-  inLanguage: "ko-KR",
-  description: "현재 위치와 지도 화면을 기준으로 로또 판매점과 과거 당첨 이력을 제공하는 비공식 정보 서비스",
-  isAccessibleForFree: true,
+  "@graph": [
+    {
+      "@type": "WebSite",
+      name: "로또리",
+      alternateName: "LottoRy",
+      url: SITE_URL,
+      inLanguage: "ko-KR",
+    },
+    {
+      "@type": "WebApplication",
+      name: "로또리",
+      alternateName: "LottoRy",
+      url: SITE_URL,
+      applicationCategory: "MapApplication",
+      operatingSystem: "Web",
+      inLanguage: "ko-KR",
+      description: "내 주변 로또 판매점과 과거 당첨 이력을 제공하는 비공식 정보 서비스",
+      isAccessibleForFree: true,
+    },
+  ],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

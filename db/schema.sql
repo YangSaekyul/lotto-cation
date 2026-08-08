@@ -1,4 +1,4 @@
--- PostgreSQL / Supabase Database Schema for LottoRi
+-- PostgreSQL / Supabase Database Schema for LottoRy
 
 
 -- 1. Stores Table

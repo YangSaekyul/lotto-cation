@@ -13,7 +13,7 @@ from urllib.request import Request, urlopen
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 BASE = "https://www.dhlottery.co.kr"
-HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; LottoRiDataRefresh/1.0)"}
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; LottoRyDataRefresh/1.0)"}
 STORE_HISTORY_START = 1169
 
 

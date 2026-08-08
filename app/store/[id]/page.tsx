@@ -1,4 +1,5 @@
-import { Clock3, Flag, MapPin, Navigation, Phone, Store as StoreIcon, ShieldCheck } from "lucide-react";
+import { Clock3, Flag, MapPin, Phone, Store as StoreIcon, ShieldCheck } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppHeader } from "@/components/app-header";
@@ -8,6 +9,35 @@ import { StoreMiniMap } from "@/components/store-mini-map";
 import { getDrawDateMap, getStoreById, type WinRank } from "@/lib/db";
 
 type StorePageProps = { params: Promise<{ id: string }> };
+
+export async function generateMetadata({ params }: StorePageProps): Promise<Metadata> {
+  const { id } = await params;
+  const store = getStoreById(id);
+
+  if (!store) {
+    return {
+      title: "판매점을 찾을 수 없습니다",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const title = `${store.name} | 로또 판매점 당첨 이력`;
+  const description = `${store.address} ${store.name}의 로또 1~5등 공개 당첨 이력과 누적 당첨 횟수를 확인하세요.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/store/${encodeURIComponent(store.id)}` },
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url: `/store/${encodeURIComponent(store.id)}`,
+      siteName: "로또리",
+      locale: "ko_KR",
+    },
+  };
+}
 
 export default async function StorePage({ params }: StorePageProps) {
   const { id } = await params;

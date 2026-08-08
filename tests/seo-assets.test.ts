@@ -11,6 +11,10 @@ test('browser icon and Google crawl endpoints are present', () => {
   }
   const layout = fs.readFileSync(path.join(root, 'app/layout.tsx'), 'utf8');
   assert.match(layout, /metadataBase/);
-  assert.match(layout, /lotto-ri\.vercel\.app/);
+  assert.match(layout, /lotto-ry\.vercel\.app/);
+  assert.match(layout, /verification:/);
+  assert.match(layout, /GzSKhOZfpEpV6oFZs-bJzSoU_hd3spCzLTlRisA7wyo/);
+  assert.match(layout, /WebSite/);
   assert.match(layout, /application\/ld\+json/);
+  assert.equal(fs.existsSync(path.join(root, 'app/opengraph-image.tsx')), true);
 });

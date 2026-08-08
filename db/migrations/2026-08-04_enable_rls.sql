@@ -1,5 +1,5 @@
 -- ============================================================================
--- LottoRi / Lotto-cation — RLS 보안 마이그레이션 (보안 경고 대응)
+-- LottoRy — RLS 보안 마이그레이션 (보안 경고 대응)
 -- 대상: Supabase project lotto-map-recovered (ref: kkjpadnjsitnhsqltiuf)
 -- 이유: Supabase Advisor 보안 경고 — RLS 미활성화 테이블이 public으로 노출됨
 -- 시작일: 2026-08-04

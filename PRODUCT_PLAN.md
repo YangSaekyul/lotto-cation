@@ -2,13 +2,13 @@
 
 > **For Hermes:** Build only after the data-location pipeline is proven; the existing legacy lotto repository is data-only input and must not be reused as application code.
 
-**서비스명:** 로또리 (LottoRi)
+**서비스명:** 로또리 (LottoRy)
 
 **한 줄 설명:** 가까운 로또 판매점과 과거 당첨 이력을 쉽게 찾는 모바일 웹
 
 **프로젝트 주소:** `미배포` — 데이터 최신화와 지도 MVP 검증 후 Vercel production 주소를 확정한다.
 
-**Git 저장소:** https://github.com/YangSaekyul/lotto-cation
+**Git 저장소:** https://github.com/YangSaekyul/lotto-ry
 
 **로컬 프로젝트:** `/Users/yang/CODE/lotto-cation`
 

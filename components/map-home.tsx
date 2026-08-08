@@ -697,7 +697,7 @@ function getRadiusFromZoom(zoom: number): number {
             </span>
             <div>
               <p className="text-[17px] font-black leading-tight tracking-[-0.03em] text-[#17211C]">로또리</p>
-              <p className="text-[10px] font-extrabold text-[#0F8A5F] tracking-wide">LOTTO + RI</p>
+              <p className="text-[10px] font-extrabold text-[#0F8A5F] tracking-wide">LOTTO + RY</p>
             </div>
           </div>
 

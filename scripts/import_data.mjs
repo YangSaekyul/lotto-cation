@@ -37,7 +37,7 @@ function stableSuffix(value) {
 }
 
 function main() {
-  console.log('Starting LottoRi data normalization & import process...');
+  console.log('Starting LottoRy data normalization & import process...');
 
   const recordsPath = path.join(DATA_DIR, 'winning_store_records_current.json');
   const resultsPath = path.join(DATA_DIR, 'official_draw_results_all.json');
